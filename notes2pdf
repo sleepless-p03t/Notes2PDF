@@ -1,0 +1,422 @@
+#!/bin/bash
+
+IFS=
+oIFS=$IFS
+
+echo -n '' > out.tex
+function report_err
+{
+	echo "Error on line $1"
+}
+
+function list
+{
+	local file="$1"
+	local pi=-1
+	local cnt=-1
+	local psh=0
+
+	local close=0
+
+	local first style
+
+	while IFS=':' read -r tnum line; do
+		if [[ "$line" != "LSTS" ]] && [[ "$line" != "LSTE" ]]; then
+			if [ $pi -lt $tnum ]; then
+				for i in `seq 0 $pi`; do
+					echo -en "\t"
+				done
+		
+				echo "\\begin{itemize}"
+				close=$((close+1))
+			fi
+
+			if [ $pi -gt $tnum ]; then
+				for i in `seq 0 $pi`; do
+					echo -en "\t"
+				done
+
+				if [ $psh -eq 1 ]; then
+					echo -en "\t"
+					psh=0
+				fi
+
+				echo "\\end{itemize}"
+				close=$((close-1))
+			fi
+			
+			first=$(echo $line | sed 's/^[ \t]*//' | cut -d' ' -f1)
+			if [ ${#first} -gt 1 ]; then
+				style=${first:1}
+				line=$(echo $line | sed 's/\*\(.*\) /\\item['"$style"']{/;s/[[:space:]]*$//')
+			else
+				line=$(echo $line | sed 's/* /\\item{/;s/[[:space:]]*$//')
+			fi
+			line="$line}"
+			
+			echo -e "\t$line"
+
+			if [ $pi -gt $tnum ] || [ $pi -eq -1 ]; then
+				cnt=0
+			elif [ $pi -lt $tnum ]; then
+				cnt=1
+			fi
+	
+			pi=$tnum
+		fi
+	done< <(awk '/LSTS/{flag=1}/LSTE/{print; flag=0}flag' $file | awk '{ match($0, /^[\t]*/); printf("%d:%s\n", RLENGTH, $0); }')
+
+	while [ $close -gt 0 ]; do
+		for i in `seq 0 $((close-2))`; do
+			echo -en "\t"
+		done
+
+		echo "\\end{itemize}"
+
+		close=$((close-1))
+	done
+}
+
+function table
+{
+	local file="$1"
+	local title cols
+	local ctitle=0
+	while IFS= read -r line; do
+		if [[ "$line" == "TBLS"* ]]; then
+			cols=`cut -d':' -f2 <<< $line`
+			title=`cut -d':' -f3 <<< $line`
+			echo "\\begin{center}"
+			echo -n "\\begin{tabular}{ |"
+			IFS=' '
+			for i in `seq 1 $cols | tr '\n' '\ '`; do
+				echo -n "c| "
+			done | sed 's/ c/c/g'
+			echo "}"
+
+			echo "\\hline"
+			echo "\\multicolumn{$cols}{|c|}{$title} \\\\"
+			echo "\\hline"
+			ctitle=1
+		elif [[ "$line" != "TBLE" ]]; then
+			line=$(echo -n $line | tr -s '[ \t]' '\t' | sed 's/\t/ \& /g')
+			echo -e "\t$line \\\\\\\\"
+			if [ $ctitle -eq 1 ]; then
+				echo -e "\t\\\\hline"
+				echo -e "\t\\\\hline"
+				ctitle=0
+			fi
+		else
+			echo -e "\\\\hline\n\\\\end{tabular}\n\\\\end{center}"
+		fi
+	done< <(awk '/TBLS/{flag=1}/TBLE/{print; flag=0}flag' $1)
+}
+
+function get_line_count
+{
+	local file start end num cnt
+	file="$1"
+	start="$2"
+	end="$3"
+	num=$4
+
+	sed -n '/'"$start"'/{:a;N;/'"$end"'/!ba;x;s/^/x/;/^x\{'"$num"'\}$/{x;p;q};x}' $file > out
+	cnt=`wc -l < out`
+	rm out
+
+	echo $((cnt-2))
+}
+
+function isolate_frc
+{
+	local l="$1"
+	local o c d
+
+	if [[ "$l" != "frc("* ]]; then
+		l=$(echo $l | sed 's/frc(/ frc(/' | cut -d' ' -f 2-)
+	fi
+
+	o=$(echo $l | awk '{ split($0, chars, ""); o = 0; for (i=1;i<=length($0);i++) { if (chars[i] == "(") { o++ } } print o }')
+	c=$(echo $l | awk '{ split($0, chars, ""); c = 0; for (i=1;i<=length($0);i++) { if (chars[i] == "(") { c++ } } print c }')
+
+	if [ $c -gt $o ]; then
+		d=$((c-o))
+		while [ $d -gt 0 ]; do
+			l=$(echo $l | sed 's/\(.*\))/\1/')
+			d=$((d-1))
+		done
+	fi
+	echo $l
+}
+
+function parse_frc
+{
+	local l="$1"
+
+	while [[ "$l" == *"/"* ]]; do
+		l=$(echo $l | sed 's/\(.*\)\//\1\\/')
+		l=$(echo $l | sed 's/frc(/frac/')
+		l=$(echo $l | awk -F'\' '{ printf("%s}{%s\n", $1, $2); }')
+		l=$(echo $l | sed 's/\(.*\))/\1}/')
+
+		echo $l | sed 's/frac/\\\\frac{/g'
+	done | tail -n 1
+}
+
+function parse_fnc
+{
+	local o c d
+	if grep -q "$3" $1; then
+		echo -n '' > funcs/$2
+		while IFS= read -r l; do
+			o=$(echo $l | awk '{ split($0, chars, ""); o = 0; for (i=1;i<=length($0);i++) { if (chars[i] == "(") { o++ } } print o }')
+			c=$(echo $l | awk '{ split($0, chars, ""); c = 0; for (i=1;i<=length($0);i++) { if (chars[i] == "(") { c++ } } print c }')
+			
+			if [ $c -gt $o ]; then
+				d=$((c-o))
+				while [ $d -gt 0 ]; do
+					l=$(echo $l | sed 's/\(.*\))/\1/')
+					d=$((d-1))
+				done
+			fi
+
+			if [ -e $5 ]; then
+				grep "$3" <<< $l | sed 's/).*//;s/'"$3"'//' | awk '{ printf('"$4"') }' >> func/$2
+			else
+				grep "$3" <<< $l | sed 's/).*//;s/'"$3"'//' | awk -F"$5" '{ printf('"$4"') }' >> funcs/$2
+			fi
+		done< <(sed 's/'"$3"'/\n'"$3"'/g' $1 | grep "$3")
+	fi
+}
+
+function at_exit
+{
+	IFS=$oIFS
+	rm -rf funcs
+	rm -f lout
+	rm -f tout
+	rm -f *.log
+	rm -f *.aux
+	rm -f *.tex
+	rm -f *.tmp
+}
+
+trap at_exit INT EXIT
+
+trap 'report_err $LINENO' ERR 
+
+cat > out.tmp <<EOF
+\\documentclass[letterpaper,12pt]{article}
+\\usepackage[letterpaper,margin=0.75in]{geometry}
+\\usepackage{xcolor}
+\\usepackage{color}
+
+\\usepackage[english]{babel}
+\\usepackage[utf8x]{inputenc}
+\\usepackage{fullpage}
+\\usepackage{titlesec}
+EOF
+
+if grep -q 'EQUS\|SRCS' $1; then
+cat >> out.tmp <<EOF
+\\usepackage{tcolorbox}
+
+\\newtcolorbox{minimal}{
+	sharp corners,
+	colback=white,
+	colframe=black,
+	notitle,
+	before skip=1.5em,
+	after skip=1.5em,
+}
+
+EOF
+fi
+
+if grep -q 'equ(.*)\|EQUS' $1; then
+	echo "\\usepackage{mathtools}" >> out.tmp
+	echo "" >> out.tmp
+fi
+
+if grep -q 'SRCS' $1; then
+cat >> out.tmp <<EOF
+\\usepackage{listings}
+
+\\definecolor{mygreen}{rgb}{0,0.6,0}
+\\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\\lstset{
+	backgroundcolor=\\color{white},
+	basicstyle=\\footnotesize,
+	breaklines=true,
+	captionpos=b,
+	commentstyle=\\color{mygreen},
+	keywordstyle=\\color{blue},
+	stringstyle=\\color{mymauve},
+	showstringspaces=false,
+}
+
+EOF
+fi
+
+echo "\\titleformat{\\section}[block]{\\color{blue}\\Large\\bfseries\\filcenter}{}{1em}{}" >> out.tmp
+echo "\\begin{document}" >> out.tmp
+
+mkdir -p funcs
+
+parse_fnc "$1" "cmb" 'cmb(' '"cmb(%s,%s):{%s \\\\choose %s}\n",$1,$2,$1,$2' ','
+
+lstc=0
+tstc=0
+equc=0
+srcc=0
+
+eflag=0
+sflag=0
+tflag=0
+
+mIFS=
+while IFS=$mIFS read -r line; do
+	
+	if [[ "$line" == "LSTS" ]]; then
+		lstc=$((lstc+1))
+		line="_LST$lstc"
+	fi
+
+	if [ $tflag -eq 2 ]; then
+		tflag=1
+	elif [ $tflag -eq 3 ]; then
+		tflag=0
+	fi
+
+	if [[ "$line" == "TBLS"* ]]; then
+		tstc=$((tstc+1))
+		line="_TBL$tstc"
+		tflag=2
+	fi
+
+	if [[ "$line" == "TBLE" ]]; then
+		tflag=3
+	fi
+
+	if [[ "$line" == "EQUS" ]]; then
+		eflag=1
+		equc=$((equc+1))
+		cnt=`get_line_count "$1" "EQUS" "EQUE" $equc`
+	fi
+
+	if [[ "$line" == "EQUE" ]]; then
+		eflag=0
+	fi
+
+	if [[ "$line" == "SRCS:"* ]]; then
+		sflag=1
+	fi
+
+	if [[ "$line" == "SRCE" ]]; then
+		sflag=0
+	fi
+
+	if [ $sflag -eq 0 ]; then
+		line=$(echo $line | sed 's/{/\\{/g;s/}/\\}/g')
+	fi
+
+	if [[ "$line" == *"frc("* ]]; then
+		IFS=" "
+		for field in $line; do
+			if [[ "$field" == *"frc("* ]]; then
+				iso=`isolate_frc "$field"`
+				prs=`parse_frc "$iso"`
+				line=$(echo $line | sed "s~$iso~$prs~")
+			fi
+		done
+	fi
+
+	if [ $eflag -eq 1 ]; then
+		if [[ "$line" != "EQU"* ]]; then
+			line="$line \\nonumber"
+			if [ $cnt -gt 0 ]; then
+				line="$line \\\\"
+			fi
+		fi
+		cnt=$((cnt-1))
+	fi
+
+	if [ $tflag -eq 0 ] || [ $tflag -eq 2 ]; then
+		echo $line >> out.tmp
+	fi
+done < $1
+
+if [ "$(ls -A funcs)" ]; then
+	while read -r fnf; do
+		while IFS=":" read -r o r; do
+			sed -i "s~$o~$r~" out.tmp
+		done < $fnf
+	done< <(ls funcs/*)
+fi
+
+IFS=
+echo '' > lout
+for i in `seq 1 $lstc`; do
+	sed -n '/LSTS/{:a;N;/LSTE/!ba;x;s/^/x/;/^x\{'"$i"'\}$/{x;p;q};x}' $1 > lists
+	echo "LSTS" >> lout
+	list "lists" >> lout
+	echo "LSTE" >> lout
+	rm lists
+done
+
+echo '' > tout
+for i in `seq 1 $tstc`; do
+	sed -n '/TBLS/{:a;N;/TBLE/!ba;x;s/^/x/;/^x\{'"$i"'\}$/{x;p;q};x}' $1 > tables
+	echo "TBLS" >> tout
+	table "tables" >> tout
+	echo "TBLE" >> tout
+	rm tables
+done
+
+while read -r line; do
+	lang=`cut -d':' -f2 <<< $line`
+	sed -i "s~$line~\\\\begin{minimal}\n\\\\begin{lstlisting}[language=$lang]~" out.tmp
+done< <(grep 'SRCS' out.tmp)
+
+sed -i "s/^SRCE/\\\\end{lstlisting}\n\\\\end{minimal}/g" out.tmp
+
+while read -r line; do
+	title=`cut -d' ' -f 2- <<< $line`
+
+	title="\\\\section{$title}"
+	sed -i "s~$line~$title~" out.tmp
+done< <(grep '^# ' out.tmp)
+
+echo "\end{document}" >> out.tmp
+sed -i 's/#/\\#/g' out.tmp
+sed -i '/^LST.*/d' out.tmp
+sed -i '/[ \t]*\*/d' out.tmp
+sed -i 's/equ(\([^]]*\))/\\( \1 \\)/g' out.tmp
+sed -i 's/uln(\([^]]*\))/\\underline{ \1 }/g' out.tmp
+
+sed -i 's/EQUS/\\begin{minimal}\n\\begin{align}/g' out.tmp
+sed -i 's/EQUE/\\end{align}\n\\end{minimal}\n/g' out.tmp
+
+fname="${1%.*}"
+while IFS= read -r line; do
+
+	if [[ "$line" == "_LST"* ]]; then
+		gn=$(echo $line | sed 's/_LST//')
+		sed -n '/LSTS/{:a;N;/LSTE/!ba;x;s/^/x/;/^x\{'"$gn"'\}$/{x;p;q};x}' lout | grep -v 'LST' >> $fname.tex
+	elif [[ "$line" == "_TBL"* ]]; then
+		tn=$(echo $line | sed 's/_TBL//')
+		sed -n '/TBLS/{:a;N;/TBLE/!ba;x;s/^/x/;/^x\{'"$tn"'\}$/{x;p;q};x}' tout | grep -v 'TBL' >> $fname.tex
+	else
+		echo $line >> $fname.tex
+	fi
+done < out.tmp
+
+pdflatex -interaction=nonstopmode $fname.tex
+stat=$?
+if [ $stat -ne 0 ]; then
+	echo "notes2pdf encountered an error from pdflatex"
+else
+	echo -e "\e[0;32mPDF written to \e[1;32m$fname.pdf\e[0m"
+fi

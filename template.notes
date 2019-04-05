@@ -1,0 +1,49 @@
+# Sample
+
+LSTS
+* Inline equations
+	*a. internal
+* Equation groups
+* And code
+LSTE
+
+Equations within sentences work: equ(x = (x + 1)^2) just like that
+
+Equation groups as well
+
+{ 1 2 3 4 }
+
+EQUS
+P(E) = 12
+
+cmb(9,3)
+
+g(x) = frc(cmb(9,3)/frc(7/2))
+EQUE
+
+Some sample Python
+
+SRCS:python
+name = input("What is your name? ")
+age = int(input("What is your age? "))
+
+print name
+print age
+SRCE
+
+Some sample Java
+
+SRCS:java
+public class Test {
+	
+	public static void main(String[] args) {
+		System.out.println("Hello, World");
+	}
+}
+SRCE
+
+TBLS:4:Title
+cell1	cell2	cell3	cell4
+cell5	cell6	cell7	cell8
+cell9	cell10	cell11	cell12
+TBLE
