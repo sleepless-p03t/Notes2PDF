@@ -86,7 +86,7 @@ Lines starting with \* denote bullets\
 Any text that immediately follows \* is treated as the bullet icon\
 	- \*text
 
-Bullet levels are defined by indentation (tabs)\
+Bullet levels are defined by indentation (tabs)
 
 #### Equation blocks
 
@@ -107,7 +107,7 @@ Table start; number of columns is the first argument, table title is the second 
 Table end\
 	- TBLE
 
-Columns are separated by tabs\
+Columns are separated by tabs
 
 *note: the first row of the table is treated as the column titles*
 
