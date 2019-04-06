@@ -12,7 +12,7 @@ PDF file.
 ```powershell
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 ```
-and restart your computer when prompted
+and restart your computer when prompted\
 3. Search Ubuntu in the Windows Store
 4. Install Ubuntu
 5. After Ubuntu is installed, open the application
