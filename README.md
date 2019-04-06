@@ -84,7 +84,7 @@ Bullet list end\
 Lines starting with \* denote bullets\
 	- \*\
 Any text that immediately follows \* is treated as the bullet icon\
-	- \*text\
+	- \*text
 
 Bullet levels are defined by indentation (tabs)\
 
@@ -93,22 +93,22 @@ Bullet levels are defined by indentation (tabs)\
 Equation block start\
 	- EQUS\
 Equation block end\
-	- EQUE\
+	- EQUE
 
 #### Source code blocks
 Source code block start; language specified with :*language*\
 	- SRCS:*language*\
 Source code block end\
-	- SRCE\
+	- SRCE
 
 #### Tables
 Table start; number of columns is the first argument, table title is the second argument\
 	- TBLS:*cols*:*title*\
 Table end\
-	- TBLE\
+	- TBLE
 
 Columns are separated by tabs\
 
-*note: the first row of the table is treated as the column titles*\
+*note: the first row of the table is treated as the column titles*
 
 An example can be found [here](template.notes)
