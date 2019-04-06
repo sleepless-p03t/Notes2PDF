@@ -22,6 +22,23 @@ and restart your computer when prompted\
 sudo apt-get update
 sudo apt-get upgrade
 ```
+
+Adding easy access to Windows directories:
+
+1. If you don't know your Windows username, do the following in cmd:
+```cmd
+echo %USERNAME%
+```
+2. In the Ubuntu terminal do this:
+```bash
+echo 'export WHOME="/mnt/c/Users/<your username>/"' >> ~/.bashrc
+source ~/.bashrc
+```
+Copying a file to your Windows Desktop (example)
+```bash
+cp myfile $WHOME/Desktop/
+```
+
 ### Installing texlive packages
 
 In a terminal, do one of the following:
