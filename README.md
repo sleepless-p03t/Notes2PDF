@@ -59,12 +59,11 @@ In a terminal, run:
 ```bash
 notes2pdf <file>.notes
 ```
-
 Assuming no errors exist in the notes file, Notes2PDF will run successfully
 
 ## Help and Tips
 
-Notes2PDF is relatively expandable
+Notes2PDF is relatively expandable\
 It currently supports:
 - Bullets
 - inline equations
@@ -78,38 +77,38 @@ It currently supports:
 
 #### Bullet lists
 
-Bullet list start
-	- LSTS
-Bullet list end
-	- LSTE
-Lines starting with \* denote bullets
-	- \*
-Any text that immediately follows \* is treated as the bullet icon
-	- \*text
+Bullet list start\
+	- LSTS\
+Bullet list end\
+	- LSTE\
+Lines starting with \* denote bullets\
+	- \*\
+Any text that immediately follows \* is treated as the bullet icon\
+	- \*text\
 
-Bullet levels are defined by indentation (tabs)
+Bullet levels are defined by indentation (tabs)\
 
 #### Equation blocks
 
-Equation block start
-	- EQUS
-Equation block end
-	- EQUE
+Equation block start\
+	- EQUS\
+Equation block end\
+	- EQUE\
 
 #### Source code blocks
-Source code block start; language specified with :*language*
-	- SRCS:*language*
-Source code block end
-	- SRCE
+Source code block start; language specified with :*language*\
+	- SRCS:*language*\
+Source code block end\
+	- SRCE\
 
 #### Tables
-Table start; number of columns is the first argument, table title is the second argument
-	- TBLS:*cols*:*title*
-Table end
-	- TBLE
+Table start; number of columns is the first argument, table title is the second argument\
+	- TBLS:*cols*:*title*\
+Table end\
+	- TBLE\
 
-Columns are separated by tabs
+Columns are separated by tabs\
 
-*note: the first row of the table is treated as the column titles*
+*note: the first row of the table is treated as the column titles*\
 
 An example can be found [here](template.notes)
