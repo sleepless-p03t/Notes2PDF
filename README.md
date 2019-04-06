@@ -65,6 +65,7 @@ Assuming no errors exist in the notes file, Notes2PDF will run successfully
 
 Notes2PDF is relatively expandable\
 It currently supports:
+- Titles
 - Bullets
 - inline equations
 - equation blocks
@@ -76,6 +77,9 @@ It currently supports:
 ## The Notes Syntax
 
 #### Bullet lists
+
+Titles are defined as\
+	- # Title
 
 Bullet list start\
 	- LSTS\
