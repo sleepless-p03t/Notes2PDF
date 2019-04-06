@@ -84,12 +84,12 @@ Notes2PDF is relatively expandable\
 It currently supports:
 - Titles
 - Bullets
-- inline equations
+- Inline equations
 - equation blocks
 - Fractions
 - a choose b notation
-- rudimentary table formatting
-- syntax highlighting for programming languages
+- Rudimentary table formatting
+- Syntax highlighting for programming languages
 
 ## The Notes Syntax
 
