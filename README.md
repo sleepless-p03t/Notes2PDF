@@ -13,10 +13,10 @@ PDF file.
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 ```
 and restart your computer when prompted\
-3. Search Ubuntu in the Windows Store
-4. Install Ubuntu
-5. After Ubuntu is installed, open the application
-6. Follow the prompts for Username and Password setup
+3. Search Ubuntu in the Windows Store\
+4. Install Ubuntu\
+5. After Ubuntu is installed, open the application\
+6. Follow the prompts for Username and Password setup\
 7. Run the following after Ubuntu finishes installing:
 ```bash
 sudo apt-get update
