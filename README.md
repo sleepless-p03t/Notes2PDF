@@ -34,7 +34,7 @@ echo %USERNAME%
 echo 'export WHOME="/mnt/c/Users/<your username>/"' >> ~/.bashrc
 source ~/.bashrc
 ```
-Copying a file to your Windows Desktop (example)
+Copying a file to your Windows Desktop from Ubuntu terminal (example)
 ```bash
 cp myfile $WHOME/Desktop/
 ```
