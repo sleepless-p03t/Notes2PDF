@@ -111,5 +111,5 @@ Columns are separated by tabs
 
 *note: the first row of the table is treated as the column titles*
 
-An example can be viewed [here](template.notes)
+An example can be viewed [here](template.notes)\
 And the generated PDF can be viewed [here](template.pdf)
