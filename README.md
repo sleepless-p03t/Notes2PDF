@@ -1,7 +1,7 @@
 # Notes2PDF
 
 Notes2PDF is a simple parser which converts a pseudo
-markdown language into LaTeX which is then compiled into a
+markdown language into LaTeX which is then compiled into a formatted
 PDF file.
 
 ## Prerequisites
