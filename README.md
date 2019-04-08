@@ -185,7 +185,7 @@ Combinations formatting: between the parentheses is *n*,*r*
 - EX: cmb(4,2)
 
 These can all be used together:
-- EX: equ(frc(cmb(4,2) + cmb(3,1)/cmb(7,3)))\
+- EX: equ(frc(cmb(4,2) + cmb(3,1)/cmb(7,3)))
 
 An example can be viewed [here](template.notes)\
 And the generated PDF can be viewed [here](template.pdf)
