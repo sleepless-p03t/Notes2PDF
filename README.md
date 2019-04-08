@@ -80,6 +80,7 @@ cd Notes2PDF
 sudo cp notes2pdf /usr/local/bin/
 sudo chmod +x /usr/local/bin/notes2pdf
 ```
+## Adding Syntax Highlighting to Vim and Notepad++
 
 If you want to add syntax rules and keyword completion for notes files to vim:
 ```bash
@@ -92,16 +93,18 @@ cp vim/syntax/notes.vim ~/.vim/syntax/
 cp vim/words/notes.txt ~/.vim/words/
 ```
 
-If you want to add syntax highlighting to Notepad++\
+If you want to add syntax highlighting to Notepad++ (Windows/Linux)\
 From the terminal do:
 ```bash
 # Windows
 cp notepad++/notes.xml $WHOME/notes.xml
+# Linux
+cp notepad++/notes.xml ~/notes.xml
 ```
-2. Open Notepad++ (Notepad++ can be installed via Wine in Linux)
+2. Open Notepad++ (Notepad++ can be installed/run via Wine in Linux)
 3. Under the Language menu, select Define Your Language...
 4. Click Import...
-5. Select the notes.xml file from your user directory
+5. Select the notes.xml file from your user/home directory
 6. Restart Notepad++
 7. Now you should see the Notes language at the bottom of the Language list
 
