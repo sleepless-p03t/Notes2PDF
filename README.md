@@ -176,10 +176,10 @@ Columns are separated by tabs
 
 Inline math formatting: everything between the parantheses is treated as math
 - equ()
-- EX: equ(g(x) = x^2 + (x-2) + 5)
+- EX: equ(g(x) = x^2 + (x-2) + 5)\
 Fraction formatting: between the parentheses is *numerator*/*denominator* which can also be fractions
 - frc(*numerator*/*denominator*)
-- EX: frc(12/frc(7/4))
+- EX: frc(12/frc(7/4))\
 Combinations formatting: between the parentheses is *n*,*r*
 - cmb(*n*,*r*)
 - EX: cmb(4,2)
