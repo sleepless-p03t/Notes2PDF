@@ -147,6 +147,11 @@ function isolate_frc
 		l=$(echo $l | sed 's/frc(/ frc(/' | cut -d' ' -f 2-)
 	fi
 
+	IFS=
+	l=$(echo $l | sed 's/ \+/\+/;s/\+ /\+/;s/\+/_plus/')
+	l=$(echo $l | sed 's/ \*/\*/;s/\* /\*/;s/\*/_times/')
+	l=$(echo $l | sed 's/ \//\//;s/\/ /\//;s/\//_divide/')
+
 	o=$(echo $l | awk '{ split($0, chars, ""); o = 0; for (i=1;i<=length($0);i++) { if (chars[i] == "(") { o++ } } print o }')
 	c=$(echo $l | awk '{ split($0, chars, ""); c = 0; for (i=1;i<=length($0);i++) { if (chars[i] == "(") { c++ } } print c }')
 
@@ -157,6 +162,11 @@ function isolate_frc
 			d=$((d-1))
 		done
 	fi
+	
+	IFS=
+	l=$(echo $l | sed 's/_plus/\+/')
+	l=$(echo $l | sed 's/_times/\*/')
+	l=$(echo $l | sed 's/_divide/\//')
 	echo $l
 }
 
@@ -230,7 +240,7 @@ trap 'report_err $LINENO' ERR
 # ------ SCRIPT START ------ #
 
 # Display error message and exit if file not specified or file not found
-if [ -e $1 ]; then
+if [ -z $1 ]; then
 	echo -e "\e[0;31mMissing notes file. Aborting\e[0m"
 	exit 1
 elif [ ! -f $1 ]; then
@@ -467,6 +477,7 @@ sed -i 's/uln(\([^]]*\))/\\underline{ \1 }/g' out.tmp
 # Format EQU* lines
 sed -i 's/EQUS/\\begin{minimal}\n\\begin{align}/g' out.tmp
 sed -i 's/EQUE/\\end{align}\n\\end{minimal}\n/g' out.tmp
+
 
 # Get the file name from $1
 fname="${1%.*}"

@@ -148,6 +148,20 @@ Columns are separated by tabs
 
 *note: the first row of the table is treated as the column titles*
 
+#### Math Formatting
+
+Inline math formatting: everything between the parantheses is treated as math
+- equ()
+- EX: equ(g(x) = x^2 + (x-2) + 5)
+Fraction formatting: between the parentheses is *numerator*/*denominator* which can also be fractions
+- frc(*numerator*/*denominator*)
+- EX: frc(12/frc(7/4))
+Combinations formatting: between the parentheses is *n*,*r*
+- cmb(*n*,*r*)
+- EX: cmb(4,2)
+
+These can all be used together:
+- EX: equ(frc(cmb(4,2) + cmb(3,1)/cmb(7,3)))
 An example can be viewed [here](template.notes)\
 And the generated PDF can be viewed [here](template.pdf)
 
