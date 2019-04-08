@@ -39,7 +39,7 @@ Copying a file to your Windows Desktop from Ubuntu terminal (example)
 cp myfile $WHOME/Desktop/
 ```
 
-### Installing texlive packages
+### Installing texlive packages (Linux and Windows)
 
 In a terminal, do one of the following:
 
@@ -50,6 +50,22 @@ or
 ```bash
 sudo apt-get install texlive-latex-extra texlive-latex-recommended
 ```
+
+### Installing Git and texlive (Mac\*)
+
+##### Git
+In a terminal, run
+```bash
+git --version
+```
+If Git isn't installed, you should be prompted to install it
+
+##### texlive
+
+The texlive package can be downloaded from [here](https://tug.org/mactex/mactex-download.html)
+If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html)
+
+\* *I do not own a Mac, so I have not tested this myself*
 
 ## Installing Notes2PDF
 
@@ -134,3 +150,5 @@ Columns are separated by tabs
 
 An example can be viewed [here](template.notes)\
 And the generated PDF can be viewed [here](template.pdf)
+
+If you have any questions or issues, you can email me at sleepless.genesis6@gmail.com
