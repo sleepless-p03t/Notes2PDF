@@ -137,7 +137,7 @@ function get_line_count
 	echo $((cnt-2))
 }
 
-# Isolate frc() from within a line
+# Isolate frc() from within a line; retains +, *, / from being interpretted by sed
 function isolate_frc
 {
 	local l="$1"
