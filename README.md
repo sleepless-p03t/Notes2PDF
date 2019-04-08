@@ -53,16 +53,16 @@ sudo apt-get install texlive-latex-extra texlive-latex-recommended
 
 ### Installing Git and texlive (Mac\*)
 
-##### Git
+#### Git
 In a terminal, run
 ```bash
 git --version
 ```
 If Git isn't installed, you should be prompted to install it
 
-##### texlive
+#### texlive
 
-The texlive package can be downloaded from [here](https://tug.org/mactex/mactex-download.html)
+The texlive package can be downloaded from [here](https://tug.org/mactex/mactex-download.html)\
 If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html)
 
 \* *I do not own a Mac, so I have not tested this myself*
