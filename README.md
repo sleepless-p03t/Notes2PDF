@@ -88,6 +88,18 @@ cp vim/syntax/notes.vim ~/.vim/syntax/
 cp vim/words/notes.txt ~/.vim/words/
 ```
 
+If you want to add syntax highlighting to Notepad++\
+1. From the terminal do:
+```bash
+cp notepad++/notes.xml $WHOME/notes.xml
+```
+2. Open Notepad++
+3. Under the Language menu, select Define Your Language...
+4. Click Import...
+5. Select the notes.xml file from your user directory
+6. Restart Notepad++
+7. Now you should see the Notes language at the bottom of the Language list
+
 ## Running Notes2PDF
 
 Assuming LaTeX is installed properly, Notes2PDF should work immediately
