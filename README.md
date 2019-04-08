@@ -38,6 +38,10 @@ Copying a file to your Windows Desktop from Ubuntu terminal (example)
 ```bash
 cp myfile $WHOME/Desktop/
 ```
+Changing to Windows User directory (example)
+```bash
+cd $WHOME
+```
 
 ### Installing texlive packages (Linux and Windows)
 
