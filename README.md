@@ -93,11 +93,12 @@ cp vim/words/notes.txt ~/.vim/words/
 ```
 
 If you want to add syntax highlighting to Notepad++\
-1. From the terminal do:
+From the terminal do:
 ```bash
+# Windows
 cp notepad++/notes.xml $WHOME/notes.xml
 ```
-2. Open Notepad++
+2. Open Notepad++ (Notepad++ can be installed via Wine in Linux)
 3. Under the Language menu, select Define Your Language...
 4. Click Import...
 5. Select the notes.xml file from your user directory
