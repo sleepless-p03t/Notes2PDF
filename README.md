@@ -77,13 +77,17 @@ sudo cp notes2pdf /usr/local/bin/
 sudo chmod +x /usr/local/bin/notes2pdf
 ```
 
-If you want to add syntax rules for notes files to vim:
+If you want to add syntax rules and keyword completion for notes files to vim:
 ```bash
 mkdir -p ~/.vim/ftdetect/
 mkdir -p ~/.vim/syntax/
+mkdir -p ~/.vim/words/
+
 cp vim/ftdetect/notes.vim ~/.vim/ftdetect/
 cp vim/syntax/notes.vim ~/.vim/syntax/
+cp vim/words/notes.txt ~/.vim/words/
 ```
+
 ## Running Notes2PDF
 
 Assuming LaTeX is installed properly, Notes2PDF should work immediately
@@ -161,7 +165,8 @@ Combinations formatting: between the parentheses is *n*,*r*
 - EX: cmb(4,2)
 
 These can all be used together:
-- EX: equ(frc(cmb(4,2) + cmb(3,1)/cmb(7,3)))
+- EX: equ(frc(cmb(4,2) + cmb(3,1)/cmb(7,3)))\
+
 An example can be viewed [here](template.notes)\
 And the generated PDF can be viewed [here](template.pdf)
 
