@@ -92,6 +92,23 @@ cp vim/ftdetect/notes.vim ~/.vim/ftdetect/
 cp vim/syntax/notes.vim ~/.vim/syntax/
 cp vim/words/notes.txt ~/.vim/words/
 ```
+The vim syntax file includes four functions which can be run in Normal mode:
+- Noteson: Turn notes syntax on
+```vim
+:Noteson
+```
+- Notesoff: Turn notes syntax off
+```vim
+:Notesoff
+```
+- Darknote: Dark color scheme for notes syntax
+```vim
+:Darknote
+```
+- Lightnote: Light color scheme for notes syntax
+```vim
+:Lightnote
+```
 
 If you want to add syntax highlighting to Notepad++ (Windows/Linux)\
 From the terminal do:
