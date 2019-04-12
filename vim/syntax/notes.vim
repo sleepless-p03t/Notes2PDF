@@ -3,134 +3,99 @@ if exists("b:current_syntax")
 endif
 
 let b:current_syntax = "notes"
-set showmatch
 
-if !exists("*Notesoff")
-	function Notesoff()
-		execute ':colorscheme ' . g:colors_name
-	endfunction
+" Configures the colors based on dark/light background
+if &background ==# "dark"
+	highlight NoteFunction ctermfg=darkcyan guifg=darkcyan
+	highlight NoteKeyword ctermfg=cyan guifg=cyan
+	highlight StandOut ctermfg=lightgreen guifg=lightgreen
+	highlight ArgSeparator ctermfg=darkred guifg=darkred
+	highlight NumberArg ctermfg=magenta guifg=magenta
+	highlight TextStandOut cterm=underline ctermfg=white gui=underline guifg=white
+	highlight TextSpecial ctermfg=lightgreen guifg=lightgreen
+	highlight NoteBullet cterm=bold ctermfg=green gui=bold guifg=green
+	highlight SectionTitle cterm=bold ctermfg=cyan gui=bold guifg=cyan
+elseif &background ==# "light"
+	highlight NoteFunction ctermfg=cyan guifg=cyan
+	highlight NoteKeyword ctermfg=green guifg=green
+	highlight ArgSeparator ctermfg=lightred guifg=lightred
+	highlight NumberArg ctermfg=red guifg=red
+	highlight TextStandOut cterm=underline ctermfg=black gui=underline guifg=black
+	highlight TextSpecial ctermfg=lightblue guifg=lightblue
+	highlight NoteBullet cterm=bold ctermfg=cyan gui=bold guifg=cyan
+	highlight SectionTitle cterm=bold ctermfg=blue gui=bold guifg=blue
 endif
 
-if !exists("*Noteson")
-	function Noteson()
-		let b:current_syntax = "notes"
-		syntax on
-	endfunction
-endif			
+" Basic 'static' keywords/rules
+syntax keyword notesFunction cmb frc equ
+syntax keyword notesKeyword EQUS EQUE LSTS LSTE SRCE TBLE nextgroup=EOL
 
-if !exists("*Darknote")
-	function Darknote()
-		if &ft ==# "notes"
-			set background=dark
-			syntax sync fromstart
-			syntax off
-			syntax on
-		endif
-	endfunction
-endif
+" Title and bullet styles
+syntax match titleLine /^#.*$/
+syntax match bullet /^[ \t]*\(\* \|\*\S\)[.]*/
 
-if !exists("*Lightnote")
-	function Lightnote()
-		if &ft ==# "notes"
-			set background=light
-			syntax sync fromstart
-			syntax off
-			syntax on
-		endif
-	endfunction
-endif
+" Special notesKeywords
+syntax keyword startSource SRCS nextgroup=langStart
+syntax keyword startTable TBLS nextgroup=colStart
 
-command! Notesoff call Notesoff()
-command! Noteson call Noteson()
-command! Darknote call Darknote()
-command! Lightnote call Lightnote()
+" Table column number rule
+syntax match TableCols '\d*[^:]' contained nextgroup=titleStart
+" Table title rule
+syntax match TableTitle '.*' contained nextgroup=EOL
 
-if &ft ==# "notes"
-	if &background ==# "dark"
-		highlight Normal ctermbg=NONE ctermfg=white guibg=NONE guifg=white
-		highlight Cursor ctermfg=white guifg=white
-		highlight NoteFunction ctermfg=darkcyan guifg=darkcyan
-		highlight NoteKeyword ctermfg=cyan guifg=cyan
-		highlight LineNR ctermfg=red guifg=red
-		highlight StandOut ctermfg=lightgreen guifg=lightgreen
-		highlight ArgSeparator ctermfg=darkred guifg=darkred
-		highlight NumberArg ctermfg=magenta guifg=magenta
-		highlight TextStandOut cterm=underline ctermfg=white gui=underline guifg=white
-		highlight TextSpecial ctermfg=lightgreen guifg=lightgreen
-		highlight NoteBullet cterm=bold ctermfg=green gui=bold guifg=green
-		highlight SectionTitle cterm=bold ctermfg=cyan gui=bold guifg=cyan
-	elseif &background ==# "light"
-		highlight Normal ctermbg=darkgray ctermfg=lightgray guibg=darkgray guifg=black
-		highlight Cursor ctermfg=black guifg=black
-		highlight NoteFunction ctermfg=cyan guifg=cyan
-		highlight NoteKeyword ctermfg=green guifg=green
-		highlight LineNR ctermfg=blue guifg=blue
-		highlight ArgSeparator ctermfg=lightred guifg=lightred
-		highlight NumberArg ctermfg=red guifg=red
-		highlight TextStandOut cterm=underline ctermfg=black gui=underline guifg=black
-		highlight TextSpecial ctermfg=lightblue guifg=lightblue
-		highlight NoteBullet cterm=bold ctermfg=cyan gui=bold guifg=cyan
-		highlight SectionTitle cterm=bold ctermfg=blue gui=bold guifg=blue
-	endif
+" These are all technically the same, but they each appear before a different rule
+syntax match colStart ':' contained nextgroup=TableCols
+syntax match titleStart ':' contained nextgroup=TableTitle
+syntax match langStart ':' contained nextgroup=SourceLanguage
 
-	syntax keyword notesFunction cmb frc equ
-	syntax keyword notesKeyword EQUS EQUE LSTS LSTE SRCE TBLE nextgroup=EOL
-	syntax match titleLine /^#.*$/
-	syntax match bullet /^[ \t]*\(\* \|\*\S\)[.]*/
+" A partial list of common languages supported by LaTeX listings package
+syntax keyword SourceLanguage asm awk bash sh csh ksh zsh c cpp cs css javascript java ruby python contained nextgroup=EOL
 
-	syntax keyword startSource SRCS nextgroup=langStart
-	syntax keyword startTable TBLS nextgroup=colStart
+" End of line rule
+syntax match EOL '$' contained
 
-	syntax match TableCols '\d*[^:]' contained nextgroup=titleStart
-	syntax match TableTitle '.*' contained nextgroup=EOL
+" Link syntax rules to color rules
+highlight link TableCols NumberArg
+highlight link TableTitle TextStandOut
+highlight link SourceLanguage TextSpecial
 
-	syntax match colStart ':' contained nextgroup=TableCols
-	syntax match titleStart ':' contained nextgroup=TableTitle
-	syntax match langStart ':' contained nextgroup=SourceLanguage
+highlight link colStart ArgSeparator
+highlight link titleStart ArgSeparator
+highlight link langStart ArgSeparator
 
-	syntax keyword SourceLanguage asm awk bash sh csh ksh zsh c cpp cs css javascript java ruby python contained nextgroup=EOL
-	syntax match EOL '$' contained
+highlight link notesFunction NoteFunction
+highlight link notesKeyword NoteKeyword
+highlight link startSource NoteKeyword
+highlight link startTable NoteKeyword
 
-	highlight link TableCols NumberArg
-	highlight link TableTitle TextStandOut
-	highlight link SourceLanguage TextSpecial
+highlight link titleLine SectionTitle
+highlight link bullet NoteBullet
 
-	highlight link colStart ArgSeparator
-	highlight link titleStart ArgSeparator
-	highlight link langStart ArgSeparator
+" Highlight matching parens, error output mismatched paren
+" Modified based on Accepted Answer from https://stackoverflow.com/questions/542929/highlighting-unmatched-brackets-in-vim
+" which is a variation on Dr Chip's rainbow plugin: http://www.drchip.org/astronaut/vim/#RAINBOW
 
-	highlight link notesFunction NoteFunction
-	highlight link notesKeyword NoteKeyword
-	highlight link startSource NoteKeyword
-	highlight link startTable NoteKeyword
+syntax cluster ParenGroup contains=notesFunction
+syntax match ParenError display ')'
+syntax region  Paren transparent matchgroup=hlLevel0 start='(' end=')' contains=@ParenGroup,Paren1
+syntax region  Paren1 transparent matchgroup=hlLevel1 start='(' end=')' contains=@ParenGroup,Paren2
+syntax region  Paren2 transparent matchgroup=hlLevel2 start='(' end=')' contains=@ParenGroup,Paren3
+syntax region  Paren3 transparent matchgroup=hlLevel3 start='(' end=')' contains=@ParenGroup,Paren4
+syntax region  Paren4 transparent matchgroup=hlLevel4 start='(' end=')' contains=@ParenGroup,Paren5
+syntax region  Paren5 transparent matchgroup=hlLevel5 start='(' end=')' contains=@ParenGroup,Paren6
+syntax region  Paren6 transparent matchgroup=hlLevel6 start='(' end=')' contains=@ParenGroup,Paren7
+syntax region  Paren7 transparent matchgroup=hlLevel7 start='(' end=')' contains=@ParenGroup,Paren8
+syntax region  Paren8 transparent matchgroup=hlLevel8 start='(' end=')' contains=@ParenGroup,Paren9
+syntax region  Paren9 transparent matchgroup=hlLevel9 start='(' end=')' contains=@ParenGroup,Paren
+highlight link ParenError Error
 
-	highlight link titleLine SectionTitle
-	highlight link bullet NoteBullet
-
-	syntax cluster ParenGroup contains=notesFunction
-	syntax match ParenError display ')'
-	syntax region  Paren transparent matchgroup=hlLevel0 start='(' end=')' contains=@ParenGroup,Paren1
-	syntax region  Paren1 transparent matchgroup=hlLevel1 start='(' end=')' contains=@ParenGroup,Paren2
-	syntax region  Paren2 transparent matchgroup=hlLevel2 start='(' end=')' contains=@ParenGroup,Paren3
-	syntax region  Paren3 transparent matchgroup=hlLevel3 start='(' end=')' contains=@ParenGroup,Paren4
-	syntax region  Paren4 transparent matchgroup=hlLevel4 start='(' end=')' contains=@ParenGroup,Paren5
-	syntax region  Paren5 transparent matchgroup=hlLevel5 start='(' end=')' contains=@ParenGroup,Paren6
-	syntax region  Paren6 transparent matchgroup=hlLevel6 start='(' end=')' contains=@ParenGroup,Paren7
-	syntax region  Paren7 transparent matchgroup=hlLevel7 start='(' end=')' contains=@ParenGroup,Paren8
-	syntax region  Paren8 transparent matchgroup=hlLevel8 start='(' end=')' contains=@ParenGroup,Paren9
-	syntax region  Paren9 transparent matchgroup=hlLevel9 start='(' end=')' contains=@ParenGroup,Paren
-	highlight link ParenError Error
-
-	highlight default link hlLevel0 NoteFunction
-	highlight default link hlLevel1 NoteFunction
-	highlight default link hlLevel2 NoteFunction
-	highlight default link hlLevel3 NoteFunction
-	highlight default link hlLevel4 NoteFunction
-	highlight default link hlLevel5 NoteFunction
-	highlight default link hlLevel6 NoteFunction
-	highlight default link hlLevel7 NoteFunction
-	highlight default link hlLevel8 NoteFunction
-	highlight default link hlLevel9 NoteFunction
-else
-	execute ':colorscheme ' . g:colors_name
-endif
+highlight default link hlLevel0 NoteFunction
+highlight default link hlLevel1 NoteFunction
+highlight default link hlLevel2 NoteFunction
+highlight default link hlLevel3 NoteFunction
+highlight default link hlLevel4 NoteFunction
+highlight default link hlLevel5 NoteFunction
+highlight default link hlLevel6 NoteFunction
+highlight default link hlLevel7 NoteFunction
+highlight default link hlLevel8 NoteFunction
+highlight default link hlLevel9 NoteFunction

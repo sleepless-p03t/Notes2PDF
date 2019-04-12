@@ -92,22 +92,50 @@ cp vim/ftdetect/notes.vim ~/.vim/ftdetect/
 cp vim/syntax/notes.vim ~/.vim/syntax/
 cp vim/words/notes.txt ~/.vim/words/
 ```
-The vim syntax file includes four functions which can be run in Normal mode:
-- Noteson: Turn notes syntax on
+Next add the following to your ~/.vimrc file:
 ```vim
-:Noteson
-```
-- Notesoff: Turn notes syntax off
-```vim
-:Notesoff
-```
-- Darknote: Dark color scheme for notes syntax
-```vim
-:Darknote
-```
-- Lightnote: Light color scheme for notes syntax
-```vim
-:Lightnote
+"--- Autoswap colorschemes based on current buffer/window ---
+" Dark colorschemes (excluding evening) are swapped to elflord for notes files
+" Light colorschemes are swapped to evening with background=light for notes files
+" Leaving a notes file swaps colors back to the default/user specified colorscheme
+
+" store the user specified colorscheme name
+let g:udefault = g:colors_name
+
+" This function sets the notes colorscheme based on the current colorscheme
+if !exists("*SetNotesScheme")
+	function SetNotesScheme()
+		if &background ==# "dark" && g:colors_name !=# "elflord"
+			colorscheme elflord
+			syntax on
+		elseif exists("g:colors_name")
+			if g:colors_name ==# "evening"
+				set background="light"
+				syntax on
+			endif
+		else
+			colorscheme evening
+			set background="light"
+			syntax on
+		endif
+	endfunction
+endif
+
+" This function restores the default colorscheme
+if !exists("*SetDefaultScheme")
+	function SetDefaultScheme()
+		execute ':colorscheme ' . g:udefault
+		syntax on
+	endfunction
+endif
+
+" Automatically call SetDefaultScheme() for all file types
+autocmd BufEnter,WinEnter * call SetDefaultScheme()
+
+" Automatically call SetNotesScheme() when entering a notes file
+autocmd BufEnter,WinEnter *.notes call SetNotesScheme()
+" Automatically call SetDefaultScheme() when leaving a notes file
+autocmd BufLeave,WinLeave *.notes call SetDefaultScheme()
 ```
 
 If you want to add syntax highlighting to Notepad++ (Windows/Linux)\
