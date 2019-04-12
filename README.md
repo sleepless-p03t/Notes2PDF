@@ -92,7 +92,7 @@ cp vim/ftdetect/notes.vim ~/.vim/ftdetect/
 cp vim/syntax/notes.vim ~/.vim/syntax/
 cp vim/words/notes.txt ~/.vim/words/
 ```
-Next add the following to your ~/.vimrc file:
+Next add the following to the end of your ~/.vimrc file:
 ```vim
 "--- Autoswap colorschemes based on current buffer/window ---
 " Dark colorschemes (excluding evening) are swapped to elflord for notes files
