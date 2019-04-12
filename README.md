@@ -82,7 +82,7 @@ sudo chmod +x /usr/local/bin/notes2pdf
 ```
 ## Adding Syntax Highlighting to Vim and Notepad++
 
-If you want to add syntax rules and keyword completion for notes files to vim:
+If you want to add syntax rules and keyword completion for notes files to vim:\
 *Note: ~/.vim and ~/.vimrc are Linux/OSX only*
 Windows users: Check [here](https://superuser.com/questions/86246/where-should-the-vimrc-file-be-located-on-windows-7) for vim/vimrc locations
 
