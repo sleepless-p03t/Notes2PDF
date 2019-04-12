@@ -31,7 +31,7 @@ echo %USERNAME%
 ```
 2. In the Ubuntu terminal do this:
 ```bash
-echo 'export WHOME="/mnt/c/Users/<your username>/"' >> ~/.bashrc
+echo 'export WHOME="/mnt/c/Users/<your Windows username>/"' >> ~/.bashrc
 source ~/.bashrc
 ```
 Copying a file to your Windows Desktop from Ubuntu terminal (example)
