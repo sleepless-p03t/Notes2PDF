@@ -4,10 +4,20 @@
 IFS=
 oIFS=$IFS
 
+FNAME=$1
+
+# Output message if verbose set
+function verbout
+{
+	if [ $verbose -eq 1 ]; then
+		echo -e "   \e[0;37m[\e[1;34m*\e[0;37m]\e[0m $1"
+	fi
+}
+
 # Output line number where error occurs in script
 function report_err
 {
-	echo "Error on line $1"
+	echo -e "\e[0;31mError on line \e[1;31m$1\e[0m"
 }
 
 # This function parses and formats bullet lists
@@ -102,13 +112,14 @@ function table
 				echo -n "c| "
 			done | sed 's/ c/c/g'
 			echo "}"
-
-			echo "\\hline"
-			echo "\\multicolumn{$cols}{|c|}{$title} \\\\"
+			if [[ ! -z $(sed 's/[ \t]//g' <<< $title) ]]; then 
+				echo "\\hline"
+				echo "\\multicolumn{$cols}{|c|}{$title} \\\\"
+			fi
 			echo "\\hline"
 			ctitle=1
 		elif [[ "$line" != "TBLE" ]]; then
-			line=$(echo -n $line | tr -s '[ \t]' '\t' | sed 's/\t/ \& /g')
+			line=$(echo -n $line | tr -s '[\t]' '\t' | sed 's/\t/ \& /g')
 			echo -e "\t$line \\\\\\\\"
 			if [ $ctitle -eq 1 ]; then
 				echo -e "\t\\\\hline"
@@ -196,6 +207,7 @@ function parse_frc
 function parse_fnc
 {
 	local o c d
+	verbout "Generating replacements for $3)"
 	if grep -q "$3" $1; then
 		echo -n '' > funcs/$2
 		while IFS= read -r l; do
@@ -219,6 +231,21 @@ function parse_fnc
 	fi
 }
 
+# Show formatted help message
+function showhelp
+{
+	echo "Usage: notes2pdf <switch(es)> <file>"
+	echo -e "\n \e[4mPossible switches:\e[0m\n"
+	tr -s '\t' '\t' <<< '
+-h, --help		Display this help
+-v, --verbose	Verbose output
+-d, --debug		Retain log and tex files for debugging  
+-o, --output <filename>	Specify the name of the PDF file
+-p, --preview	Show a preview of the PDF on completion
+' | sed 's/\t/: :/g' | column -s ':' -t | sed 's/^/  /g'
+	echo
+}
+
 # Cleanup on exit
 # Reset IFS, remove temporary files/directories
 function at_exit
@@ -227,9 +254,13 @@ function at_exit
 	rm -rf funcs
 	rm -f lout
 	rm -f tout
-	rm -f *.log
+	if [ $error -eq 0 ]; then
+		rm -f *.log
+	fi
 	rm -f *.aux
-	rm -f *.tex
+	if [ $debug -eq 0 ]; then
+		rm -f *.tex
+	fi
 	rm -f *.tmp
 }
 
@@ -237,20 +268,101 @@ trap at_exit INT EXIT
 
 trap 'report_err $LINENO' ERR 
 
-# ------ SCRIPT START ------ #
+##### ------ SCRIPT START ------ #####
 
-# Display error message and exit if file not specified or file not found
-if [ -z $1 ]; then
-	echo -e "\e[0;31mMissing notes file. Aborting\e[0m"
+debug=0
+output=""
+error=0
+preview=0
+_help=0
+verbose=0
+
+rm -f *.tex
+rm -f *.log
+
+# set help switch to 1 if no args passed or arg1 = -h or --help
+if [ $# -gt 0 ]; then
+	if [[ "$1" != "-h" ]] && [[ "$1" != "--help" ]]; then
+		# Iterate through switches
+		while [ $# -gt 1 ]; do
+			case "$1" in
+				-d)
+					;&
+				--debug)
+					debug=1
+					;;
+				-v)
+					;&
+				--verbose)
+					verbose=1
+					;;
+				-o)
+					;&
+				--output)
+					output="${2%.*}"
+					shift
+					;;
+				-p)
+					;&
+				--preview)
+					preview=1
+					;;
+				-h)
+					;&
+				--help)
+					_help=1
+					;;
+				*)
+					echo -e "\e[0;37m[\e[1;33m-\e[0;37m]\e[0m Unknown option '$1'. Ignoring"
+					;;
+			esac
+			shift
+		done
+	else
+		_help=1
+	fi
+else
+	echo -e "Missing arguments\n"
+	_help=1
+fi
+
+# if help switch set, show help
+if [ $_help -eq 1 ]; then
+	showhelp
+	exit 0
+fi
+
+# Output message and exit if file not found, otherwise set FNAME
+if [ ! -f ${1%.*}.notes ]; then
+	echo -e "\e[0;37m[\e[1;31m!\e[0;37m]\e[0m File not found. Aborting."
 	exit 1
-elif [ ! -f $1 ]; then
-	echo -e "\e[0;31mFile $1 not found. Aborting\e[0m"
-	exit 1
+else
+	FNAME="$1"
+fi
+
+# Output message based on debug switch
+if [ $debug -eq 1 ]; then
+	echo -e "\e[0;37m[\e[1;32mi\e[0;37m]\e[0m Starting notes2pdf in debug mode"
+	echo -e "   \e[0;37m[\e[1;36m+\e[0;37m]\e[0m Debug information will be stored in ${FNAME%.*}.log"
+	echo -e "   \e[0;37m[\e[1;36m+\e[0;37m]\e[0m ${FNAME%.*}.log corresponds with ${FNAME%.*}.tex"
+else
+	echo -e "\e[0;37m[\e[1;32mi\e[0;37m]\e[0m Starting notes2pdf"
+fi
+
+# output formatting
+if [ $verbose -eq 1 ]; then
+	echo
+fi
+
+# output message if output file specified via output switch
+if [ ! -z $output ]; then
+	echo -e "\e[0;37m[\e[1;32mi\e[0;37m]\e[0m $FNAME will be written to $output.pdf"
 fi
 
 # out.tmp is a temporary file that contains most of the formatted content
 
 # Initialize the LaTeX preamble, conditionally include based upon note contents
+verbout "Defining template defaults"
 cat > out.tmp <<EOF
 \\documentclass[letterpaper,12pt]{article}
 \\usepackage[letterpaper,margin=0.75in]{geometry}
@@ -263,7 +375,9 @@ cat > out.tmp <<EOF
 \\usepackage{titlesec}
 EOF
 
-if grep -q 'EQUS\|SRCS' $1; then
+if grep -q 'EQUS\|SRCS' $FNAME; then
+	verbout "Found Equation/Source block(s) in $FNAME"
+	verbout "Updating template"
 cat >> out.tmp <<EOF
 \\usepackage{tcolorbox}
 
@@ -279,12 +393,16 @@ cat >> out.tmp <<EOF
 EOF
 fi
 
-if grep -q 'equ(.*)\|EQUS' $1; then
+if grep -q 'equ(.*)\|EQUS' $FNAME; then
+	verbout "Found Equation(s) in $FNAME"
+	verbout "Updating template"
 	echo "\\usepackage{mathtools}" >> out.tmp
 	echo "" >> out.tmp
 fi
 
-if grep -q 'SRCS' $1; then
+if grep -q 'SRCS' $FNAME; then
+	verbout "Found Source block(s) in $FNAME"
+	verbout "Updating template"
 cat >> out.tmp <<EOF
 \\usepackage{listings}
 
@@ -306,6 +424,7 @@ cat >> out.tmp <<EOF
 EOF
 fi
 
+verbout "Initializing Document data"
 # Set the title format and begin the document block
 echo "\\titleformat{\\section}[block]{\\color{blue}\\Large\\bfseries\\filcenter}{}{1em}{}" >> out.tmp
 echo "\\begin{document}" >> out.tmp
@@ -315,7 +434,7 @@ mkdir -p funcs
 
 # The "function" cmb() is used for defining a choose b notation
 # parse_fnc finds all matching calls to a "function"
-parse_fnc "$1" "cmb" 'cmb(' '"cmb(%s,%s):{%s \\\\choose %s}\n",$1,$2,$1,$2' ','
+parse_fnc "$FNAME" "cmb" 'cmb(' '"cmb(%s,%s):{%s \\\\choose %s}\n",$1,$2,$1,$2' ','
 
 # these keep track of the number of each block type found in the notes file
 lstc=0
@@ -337,6 +456,7 @@ while IFS=$mIFS read -r line; do
 	# These conditions are used to determine what block the current line is in
 	# And customize the line output as necessary
 	if [[ "$line" == "LSTS" ]]; then
+		verbout "Start List block"
 		lstc=$((lstc+1))
 		line="_LST$lstc"
 	fi
@@ -348,30 +468,36 @@ while IFS=$mIFS read -r line; do
 	fi
 
 	if [[ "$line" == "TBLS"* ]]; then
+		verbout "Start Table block"
 		tstc=$((tstc+1))
 		line="_TBL$tstc"
 		tflag=2
 	fi
 
 	if [[ "$line" == "TBLE" ]]; then
+		verbout "End Table block"
 		tflag=3
 	fi
 
 	if [[ "$line" == "EQUS" ]]; then
+		verbout "Start Equation block"
 		eflag=1
 		equc=$((equc+1))
-		cnt=`get_line_count "$1" "EQUS" "EQUE" $equc`
+		cnt=`get_line_count "$FNAME" "EQUS" "EQUE" $equc`
 	fi
 
 	if [[ "$line" == "EQUE" ]]; then
+		verbout "End Equation block"
 		eflag=0
 	fi
 
 	if [[ "$line" == "SRCS:"* ]]; then
+		verbout "Start Source block"
 		sflag=1
 	fi
 
 	if [[ "$line" == "SRCE" ]]; then
+		verbout "End Source block"
 		sflag=0
 	fi
 	
@@ -382,6 +508,7 @@ while IFS=$mIFS read -r line; do
 
 	# Special case: Fractions can be within fractions
 	if [[ "$line" == *"frc("* ]]; then
+		verbout "Fraction(s) found. Starting fraction parse task"
 		# The IFS needs to be a space now
 		IFS=" "
 		# for each "word" (field) in the line...
@@ -397,10 +524,12 @@ while IFS=$mIFS read -r line; do
 				line=$(echo $line | sed "s~$iso~$prs~")
 			fi
 		done
+		verbout "Fraction parse task finished"
 	fi
 
 	# Format the equation blocks
 	if [ $eflag -eq 1 ]; then
+		verbout "Inside Equation block, formatting content"
 		if [[ "$line" != "EQU"* ]]; then
 			line="$line \\nonumber"
 			if [ $cnt -gt 0 ]; then
@@ -414,7 +543,7 @@ while IFS=$mIFS read -r line; do
 	if [ $tflag -eq 0 ] || [ $tflag -eq 2 ]; then
 		echo $line >> out.tmp
 	fi
-done < $1 # $1 is the input file (argument 1 on the command line)
+done < $FNAME # FNAME is the input file)
 
 # If function replacements defined with parse_fnc, replace them
 if [ "$(ls -A funcs)" ]; then
@@ -426,25 +555,32 @@ if [ "$(ls -A funcs)" ]; then
 fi
 
 # Format list blocks
-IFS=
-echo '' > lout
-for i in `seq 1 $lstc`; do
-	sed -n '/LSTS/{:a;N;/LSTE/!ba;x;s/^/x/;/^x\{'"$i"'\}$/{x;p;q};x}' $1 > lists
-	echo "LSTS" >> lout
-	list "lists" >> lout
-	echo "LSTE" >> lout
-	rm lists
-done
+if grep -q 'LSTS' $FNAME; then
+	verbout "Formatting List block(s)"
+	IFS=
+	echo '' > lout
+	for i in `seq 1 $lstc`; do
+		sed -n '/LSTS/{:a;N;/LSTE/!ba;x;s/^/x/;/^x\{'"$i"'\}$/{x;p;q};x}' $FNAME > lists
+		echo "LSTS" >> lout
+		list "lists" >> lout
+		echo "LSTE" >> lout
+		rm lists
+	done
+	verbout "Formatted List blocks"
+fi
 
 # Format table blocks
-echo '' > tout
-for i in `seq 1 $tstc`; do
-	sed -n '/TBLS/{:a;N;/TBLE/!ba;x;s/^/x/;/^x\{'"$i"'\}$/{x;p;q};x}' $1 > tables
-	echo "TBLS" >> tout
-	table "tables" >> tout
-	echo "TBLE" >> tout
-	rm tables
-done
+if grep -q 'TBLS' $FNAME; then
+	verbout "Formatting Table block(s)"
+	echo '' > tout
+	for i in `seq 1 $tstc`; do
+		sed -n '/TBLS/{:a;N;/TBLE/!ba;x;s/^/x/;/^x\{'"$i"'\}$/{x;p;q};x}' $FNAME > tables
+		echo "TBLS" >> tout
+		table "tables" >> tout
+		echo "TBLE" >> tout
+		rm tables
+	done
+fi
 
 # Replace SRC* lines with proper LaTeX/listings beginning/end
 while read -r line; do
@@ -454,6 +590,7 @@ done< <(grep 'SRCS' out.tmp)
 
 sed -i "s/^SRCE/\\\\end{lstlisting}\n\\\\end{minimal}/g" out.tmp
 
+verbout "Formatting Title lines"
 # Replace '# Title' lines with proper LaTeX headers
 while read -r line; do
 	title=`cut -d' ' -f 2- <<< $line`
@@ -470,6 +607,7 @@ sed -i 's/#/\\#/g' out.tmp
 sed -i '/^LST.*/d' out.tmp
 sed -i '/[ \t]*\*/d' out.tmp
 
+verbout "Formatting wrapper function(s)"
 # Replace wrapper functions with their LaTeX equivalent
 sed -i 's/equ(\([^]]*\))/\\( \1 \\)/g' out.tmp
 sed -i 's/uln(\([^]]*\))/\\underline{ \1 }/g' out.tmp
@@ -478,28 +616,69 @@ sed -i 's/uln(\([^]]*\))/\\underline{ \1 }/g' out.tmp
 sed -i 's/EQUS/\\begin{minimal}\n\\begin{align}/g' out.tmp
 sed -i 's/EQUE/\\end{align}\n\\end{minimal}\n/g' out.tmp
 
-
-# Get the file name from $1
-fname="${1%.*}"
 # Create the final LaTeX file by inserting formatted lists and tables where necessary
+FNAME="${FNAME%.*}"
+verbout "Compiling formatted content to $FNAME.tex"
 while IFS= read -r line; do
 
 	if [[ "$line" == "_LST"* ]]; then
+		verbout "List block found. Inserting formatted content"
 		gn=$(echo $line | sed 's/_LST//')
-		sed -n '/LSTS/{:a;N;/LSTE/!ba;x;s/^/x/;/^x\{'"$gn"'\}$/{x;p;q};x}' lout | grep -v 'LST' >> $fname.tex
+		sed -n '/LSTS/{:a;N;/LSTE/!ba;x;s/^/x/;/^x\{'"$gn"'\}$/{x;p;q};x}' lout | grep -v 'LST' >> $FNAME.tex
 	elif [[ "$line" == "_TBL"* ]]; then
+		verbout "Table block found. Inserting formatted content"
 		tn=$(echo $line | sed 's/_TBL//')
-		sed -n '/TBLS/{:a;N;/TBLE/!ba;x;s/^/x/;/^x\{'"$tn"'\}$/{x;p;q};x}' tout | grep -v 'TBL' >> $fname.tex
+		sed -n '/TBLS/{:a;N;/TBLE/!ba;x;s/^/x/;/^x\{'"$tn"'\}$/{x;p;q};x}' tout | grep -v 'TBL' >> $FNAME.tex
 	else
-		echo $line >> $fname.tex
+		echo $line >> $FNAME.tex
 	fi
 done < out.tmp
 
 # Generate the PDF and display success/error messages
-pdflatex -interaction=nonstopmode $fname.tex
+verbout "Attempting to convert $FNAME.tex to PDF"
+pdflatex -interaction=nonstopmode -file-line-error $FNAME.tex > /dev/null 
+
 stat=$?
 if [ $stat -ne 0 ]; then
-	echo "notes2pdf encountered an error from pdflatex"
+	echo
+	echo -e "\e[0;37m[\e[1;31m!\e[0;37m]\e[0m notes2pdf encountered an error from pdflatex."
+	if [ $debug -eq 0 ]; then
+		echo -e "\t\e[0;37m\e[1;33m?\e[0;37m]\e[0m Try running notes2pdf --debug $FNAME.notes"
+	fi
+	error=1
 else
-	echo -e "\e[0;32mPDF written to \e[1;32m$fname.pdf\e[0m"
+	if [ ! -z $output ]; then
+		verbout "Saving PDF as ${output%.*}.pdf"
+		mv $FNAME.pdf $output
+		FNAME="${output%.*}"
+	fi
+	echo
+	echo -e "\e[0;37m[\e[1;32mi\e[0;37m]\e[0m PDF written to $FNAME.pdf"
+fi
+
+if [ $preview -eq 1 ]; then
+	verbout "Determining OS"
+	os=""
+	if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null; then
+		os="win"
+	elif [[ "$OSTYPE" == "darwin"* ]]; then
+		os="osx"
+	else
+		os="nix"
+	fi
+	verbout "OS: $os"
+	echo
+	if [ $error -eq 0 ]; then
+		echo -e "\e[0;37m[\e[1;32mi\e[0;37m]\e[0m Opening preview of $FNAME.pdf" 
+		# This is not tested
+		if [[ "$os" == "win" ]]; then
+			cmd.exe /C start $FNAME.pdf
+		elif [[ "$os" == "osx" ]]; then
+			open $FNAME.pdf
+		elif [[ "$os" == "nix" ]]; then
+			xdg-open $FNAME.pdf > /dev/null 2> /dev/null
+		fi
+	else
+		echo -e "\e[0;37m[\e[1;31m!\e[0;37m]\e[0m Error(s) exist in $FNAME.notes. Preview unavailable." 
+	fi
 fi
