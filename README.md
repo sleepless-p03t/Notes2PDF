@@ -183,6 +183,7 @@ Notes2PDF also can be run with other options:
 notes2pdf <switch(es)> <file>.notes
 ```
 Switches include:
+
 | Short Name | Long Name | Arguments | Description |
 | --- | --- | --- | --- |
 | -h | --help |   | Display usage information |
