@@ -185,7 +185,7 @@ notes2pdf <switch(es)> <file>.notes
 Switches include:
 
 | Short Name | Long Name | Arguments | Description |
-| --- | --- | --- | --- |
+| :---: | :---: | :---: | :--- |
 | -h | --help | n/a | Display usage information |
 | -v | --verbose | n/a | Display verbose output of processing |
 | -d | --debug | n/a | Retain files for debugging purposes |
