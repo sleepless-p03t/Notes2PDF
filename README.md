@@ -73,7 +73,6 @@ If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html
 
 ## Installing Notes2PDF
 
-> ---
 > #### Mac Users:
 > If you want to be able to use tab completion with notes2pdf:
 > 1. Install [Homebrew](https://brew.sh/)
@@ -88,7 +87,7 @@ If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html
 >  	source $(brew --prefix)/etc/bash_completion
 > fi
 > ```
-> --- 
+
 Open a terminal and run:
 ```bash
 git clone https://github.com/sleepless-p03t/Notes2PDF.git
@@ -123,15 +122,8 @@ cp vim/words/notes.txt ~/.vim/words/
 ```
 Next add the following to the end of your ~/.vimrc file:
 ```vim
-"--- Autoswap colorschemes based on current buffer/window ---
-" Dark colorschemes (excluding evening) are swapped to elflord for notes files
-" Light colorschemes are swapped to evening with background=light for notes files
-" Leaving a notes file swaps colors back to the default/user specified colorscheme
-
-" store the user specified colorscheme name
 let g:udefault = g:colors_name
 
-" This function sets the notes colorscheme based on the current colorscheme
 if !exists("*SetNotesScheme")
 	function SetNotesScheme()
 		if &background ==# "dark" && g:colors_name !=# "elflord"
@@ -150,7 +142,6 @@ if !exists("*SetNotesScheme")
 	endfunction
 endif
 
-" This function restores the default colorscheme
 if !exists("*SetDefaultScheme")
 	function SetDefaultScheme()
 		execute ':colorscheme ' . g:udefault
@@ -158,12 +149,9 @@ if !exists("*SetDefaultScheme")
 	endfunction
 endif
 
-" Automatically call SetDefaultScheme() for all file types
 autocmd BufEnter,WinEnter * call SetDefaultScheme()
 
-" Automatically call SetNotesScheme() when entering a notes file
 autocmd BufEnter,WinEnter *.notes call SetNotesScheme()
-" Automatically call SetDefaultScheme() when leaving a notes file
 autocmd BufLeave,WinLeave *.notes call SetDefaultScheme()
 ```
 
