@@ -299,6 +299,10 @@ if [ $# -gt 0 ]; then
 				-o)
 					;&
 				--output)
+					if [[ "$2" == *".notes" ]] || [[ "$2" == "-"* ]]; then
+						echo "Missing filename argument for '$1'. Aborting."
+						exit 1
+					fi
 					output="${2%.*}"
 					shift
 					;;

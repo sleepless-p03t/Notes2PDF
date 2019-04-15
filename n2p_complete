@@ -1,0 +1,24 @@
+#!/bin/bash
+
+_notes2pdfcomplete() {
+	
+	local cur prev count
+
+	COMPREPLY=()
+
+	cur=${COMP_WORDS[COMP_CWORD]}
+	prev=${COMP_WORDS[COMP_CWORD-1]}
+
+	case "$cur" in
+		-*)
+			COMPREPLY=( $(compgen -W '-h -v -d -o -p --help --verbose --debug --output --preview' -- $cur) )
+			;;
+		*)
+			if [[ "$prev" != *".notes" ]] && [[ "$prev" != "--help" ]] && [[ "$prev" != "-h" ]]; then
+				COMPREPLY=( $(compgen -f -X '!*.notes' -- $cur) )
+			fi
+			;;
+	esac
+}
+
+complete -o filenames -F _notes2pdfcomplete notes2pdf

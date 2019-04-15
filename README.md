@@ -73,12 +73,38 @@ If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html
 
 ## Installing Notes2PDF
 
+### Mac Users:
+
+If you want to be able to use tab completion with notes2pdf:
+1. Install [Homebrew](https://brew.sh/)
+2. In the terminal run:
+```bash
+brew install bash
+brew install bash-completion
+```
+3. Add the following to ~/.bash\_profile:
+```bash
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+	source $(brew --prefix)/etc/bash_completion
+fi
+```
+
 Open a terminal and run:
 ```bash
 git clone https://github.com/sleepless-p03t/Notes2PDF.git
 cd Notes2PDF
 sudo cp notes2pdf /usr/local/bin/
 sudo chmod +x /usr/local/bin/notes2pdf
+
+# Adding the tab completion:
+mkdir ~/.notes2pdf/
+cp n2p_complete ~/.notes2pdf/
+```
+Open ~/.bashrc in your editor of choice and add the following:
+```bash
+if [ -f ~/.notes2pdf/n2p_complete ]; then
+	source ~/.notes2pdf/n2p_complete
+fi
 ```
 ## Adding Syntax Highlighting to Vim and Notepad++
 
