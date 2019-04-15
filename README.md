@@ -186,11 +186,11 @@ Switches include:
 
 | Short Name | Long Name | Arguments | Description |
 | --- | --- | --- | --- |
-| -h | --help | N/A | Display usage information |
-| -v | --verbose | N/A | Display verbose output of processing |
-| -d | --debug | N/A | Retain files for debugging purposes |
+| -h | --help | n/a | Display usage information |
+| -v | --verbose | n/a | Display verbose output of processing |
+| -d | --debug | n/a | Retain files for debugging purposes |
 | -o | --output | file name | Specify the name of the PDF to be generated |
-| -p | --preview | N/A | Open PDF upon completion |
+| -p | --preview | n/a | Open PDF upon completion |
 
 Assuming no errors exist in the notes file, Notes2PDF will run successfully
 
