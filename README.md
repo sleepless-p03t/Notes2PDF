@@ -189,7 +189,7 @@ Switches include:
 | -h | --help | N/A | Display usage information |
 | -v | --verbose | N/A | Display verbose output of processing |
 | -d | --debug | N/A | Retain files for debugging purposes |
-| -o | --output | <output file name> | Specify the name of the PDF to be generated |
+| -o | --output | file name | Specify the name of the PDF to be generated |
 | -p | --preview | N/A | Open PDF upon completion |
 
 Assuming no errors exist in the notes file, Notes2PDF will run successfully
