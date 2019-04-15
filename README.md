@@ -81,7 +81,7 @@ If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html
 > brew install bash
 > brew install bash-completion
 > ```
-> 3. Add the following to ~/.bash\_profile:
+> 3. Add the following to `~/.bash\_profile`:
 > ```bash
 > if [ -f $(brew --prefix)/etc/bash_completion ]; then
 >  	source $(brew --prefix)/etc/bash_completion
@@ -99,7 +99,7 @@ sudo chmod +x /usr/local/bin/notes2pdf
 mkdir ~/.notes2pdf/
 cp n2p_complete ~/.notes2pdf/
 ```
-Open ~/.bashrc in your editor of choice and add the following:
+Open `~/.bashrc` in your editor of choice and add the following:
 ```bash
 if [ -f ~/.notes2pdf/n2p_complete ]; then
 	source ~/.notes2pdf/n2p_complete
@@ -108,7 +108,7 @@ fi
 ## Adding Syntax Highlighting to Vim and Notepad++
 
 If you want to add syntax rules and keyword completion for notes files to vim:\
-*Note: ~/.vim and ~/.vimrc are Linux/OSX only*\
+*Note: `~/.vim` and `~/.vimrc` are Linux/OSX only*\
 Windows users: Check [here](https://superuser.com/questions/86246/where-should-the-vimrc-file-be-located-on-windows-7) for vim/vimrc locations
 
 ```bash
@@ -120,7 +120,7 @@ cp vim/ftdetect/notes.vim ~/.vim/ftdetect/
 cp vim/syntax/notes.vim ~/.vim/syntax/
 cp vim/words/notes.txt ~/.vim/words/
 ```
-Next add the following to the end of your ~/.vimrc file:
+Next add the following to the end of your `~/.vimrc` file:
 ```vim
 let g:udefault = g:colors_name
 
