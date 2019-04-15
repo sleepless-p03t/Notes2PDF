@@ -73,9 +73,8 @@ If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html
 
 ## Installing Notes2PDF
 
----
+> ---
 > #### Mac Users:
-
 > If you want to be able to use tab completion with notes2pdf:
 > 1. Install [Homebrew](https://brew.sh/)
 > 2. In the terminal run:
@@ -89,7 +88,7 @@ If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html
 >  	source $(brew --prefix)/etc/bash_completion
 > fi
 > ```
----
+> --- 
 Open a terminal and run:
 ```bash
 git clone https://github.com/sleepless-p03t/Notes2PDF.git
