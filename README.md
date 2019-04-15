@@ -81,7 +81,7 @@ If you have issues, check out the [FAQ](http://www.tug.org/mactex/faq/index.html
 > brew install bash
 > brew install bash-completion
 > ```
-> 3. Add the following to `~/.bash\_profile`:
+> 3. Add the following to `~/.bash_profile`:
 > ```bash
 > if [ -f $(brew --prefix)/etc/bash_completion ]; then
 >  	source $(brew --prefix)/etc/bash_completion
