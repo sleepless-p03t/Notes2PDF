@@ -245,7 +245,7 @@ Groups combine multiple source code blocks together so that a full program can b
 Source code group block start; file name specified with :*filename*\
 	- GRPS:*filename*\
 Source code group block end\
-	- GRPE\
+	- GRPE
 
 #### Tables
 Table start; number of columns is the first argument, table title is the second argument\
