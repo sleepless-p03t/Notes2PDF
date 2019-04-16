@@ -808,7 +808,17 @@ if [ $preview -eq 1 ]; then
 		echo -e "\e[0;37m[\e[1;32mi\e[0;37m]\e[0m Opening preview of $FNAME.pdf" 
 		# This is not tested
 		if [[ "$os" == "win" ]]; then
-			cmd.exe /C start $FNAME.pdf
+			ubuntu="CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc"
+			suse="46932SUSE.openSUSELeap42.2_022rs5jcyhyac"
+			entsuse="46932SUSE.SUSELinuxEnterpriseServer12SP2_022rs5jcyhyac"
+			if cmd.exe /C dir "%userprofile%\\AppData\\Local\\Packages" | grep -q "$ubuntu"; then
+				lhome="%userprofile%\\AppData\\Local\\Packages\\$ubuntu\\LocalState\\rootfs$(pwd | sed 's/\//\\/g')\\"
+			elif cmd.exe /C dir "%userprofile%\\AppData\\Local\\Packages" | grep -q "$suse"; then
+				lhome="%userprofile%\\AppData\\Local\\Packages\\$suse\\LocalState\\rootfs$(pwd | sed 's/\//\\/g')\\"
+			elif cmd.exe /C dir "%userprofile%\\AppData\\Local\\Packages" | grep -q "$entsuse"; then
+				lhome="%userprofile%\\AppData\\Local\\Packages\\$entsuse\\LocalState\\rootfs$(pwd | sed 's/\//\\/g')\\"
+			fi
+			cmd.exe /C start $lhome$FNAME.pdf
 		elif [[ "$os" == "osx" ]]; then
 			open $FNAME.pdf
 		elif [[ "$os" == "nix" ]]; then

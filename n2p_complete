@@ -11,7 +11,7 @@ _notes2pdfcomplete() {
 
 	case "$cur" in
 		-*)
-			COMPREPLY=( $(compgen -W '-h -v -d -o -p --help --verbose --debug --output --preview' -- $cur) )
+			COMPREPLY=( $(compgen -W '-h -v -d -e -o -p --help --verbose --debug --execute --output --preview' -- $cur) )
 			;;
 		*)
 			if [[ "$prev" != *".notes" ]] && [[ "$prev" != "--help" ]] && [[ "$prev" != "-h" ]]; then
