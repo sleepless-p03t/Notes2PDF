@@ -190,6 +190,7 @@ Switches include:
 | -h | --help | n/a | Display usage information |
 | -v | --verbose | n/a | Display verbose output of processing |
 | -d | --debug | n/a | Retain files for debugging purposes |
+| -e | --execute | n/a | Attempt to compile/execute source blocks; requires `script` if input needs to be captured
 | -o | --output | file name | Specify the name of the PDF to be generated |
 | -p | --preview | n/a | Open PDF upon completion |
 
@@ -239,6 +240,13 @@ Source code block start; language specified with :*language*\
 Source code block end\
 	- SRCE
 
+#### Source code groups
+Groups combine multiple source code blocks together so that a full program can be run\
+Source code group block start; file name specified with :*filename*\
+	- GRPS:*filename*\
+Source code group block end\
+	- GRPE\
+
 #### Tables
 Table start; number of columns is the first argument, table title is the second argument\
 	- TBLS:*cols*:*title*\
@@ -266,5 +274,10 @@ These can all be used together:
 
 An example can be viewed [here](template.notes)\
 And the generated PDF can be viewed [here](template.pdf)
+
+The PDF was generated with the following:
+```bash
+notes2pdf -e template.notes
+```
 
 If you have any questions or issues, you can email me at sleepless.genesis6@gmail.com

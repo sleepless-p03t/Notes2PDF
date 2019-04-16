@@ -23,14 +23,20 @@ EQUE
 
 Some sample Python
 
+GRPS:test.py
 SRCS:python
-name = input("What is your name? ")
-age = int(input("What is your age? "))
+name = "Steve"
+age = 12
 
-print name
-print age
 SRCE
 
+Some text here
+
+SRCS:python
+print(name)
+print(age)
+SRCE
+GRPE
 Some sample Java
 
 SRCS:java

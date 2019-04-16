@@ -6,7 +6,7 @@ let b:current_syntax = "notes"
 
 " Configures the colors based on dark/light background
 if &background ==# "dark"
-	highlight NoteFunction ctermfg=darkcyan guifg=darkcyan
+	highlight NoteFunction ctermfg=white guifg=white
 	highlight NoteKeyword ctermfg=cyan guifg=cyan
 	highlight StandOut ctermfg=lightgreen guifg=lightgreen
 	highlight ArgSeparator ctermfg=darkred guifg=darkred
@@ -15,6 +15,7 @@ if &background ==# "dark"
 	highlight TextSpecial ctermfg=lightgreen guifg=lightgreen
 	highlight NoteBullet cterm=bold ctermfg=green gui=bold guifg=green
 	highlight SectionTitle cterm=bold ctermfg=cyan gui=bold guifg=cyan
+	highlight GenString ctermfg=lightgray guifg=lightgray
 elseif &background ==# "light"
 	highlight NoteFunction ctermfg=cyan guifg=cyan
 	highlight NoteKeyword ctermfg=green guifg=green
@@ -24,11 +25,12 @@ elseif &background ==# "light"
 	highlight TextSpecial ctermfg=lightblue guifg=lightblue
 	highlight NoteBullet cterm=bold ctermfg=cyan gui=bold guifg=cyan
 	highlight SectionTitle cterm=bold ctermfg=blue gui=bold guifg=blue
+	highlight GenString ctermfg=black guifg=black
 endif
 
 " Basic 'static' keywords/rules
 syntax keyword notesFunction cmb frc equ
-syntax keyword notesKeyword EQUS EQUE LSTS LSTE SRCE TBLE nextgroup=EOL
+syntax keyword notesKeyword EQUS EQUE LSTS LSTE SRCE TBLE GRPE PBREAK nextgroup=EOL
 
 " Title and bullet styles
 syntax match titleLine /^#.*$/
@@ -37,14 +39,17 @@ syntax match bullet /^[ \t]*\(\* \|\*\S\)[.]*/
 " Special notesKeywords
 syntax keyword startSource SRCS nextgroup=langStart
 syntax keyword startTable TBLS nextgroup=colStart
+syntax keyword startGroup GRPS nextgroup=fileStart
 
 " Table column number rule
 syntax match TableCols '\d*[^:]' contained nextgroup=titleStart
 " Table title rule
 syntax match TableTitle '.*' contained nextgroup=EOL
+syntax match FileName '.*' contained nextgroup=EOL
 
 " These are all technically the same, but they each appear before a different rule
 syntax match colStart ':' contained nextgroup=TableCols
+syntax match fileStart ':' contained nextgroup=FileName
 syntax match titleStart ':' contained nextgroup=TableTitle
 syntax match langStart ':' contained nextgroup=SourceLanguage
 
@@ -58,15 +63,18 @@ syntax match EOL '$' contained
 highlight link TableCols NumberArg
 highlight link TableTitle TextStandOut
 highlight link SourceLanguage TextSpecial
+highlight link FileName GenString
 
 highlight link colStart ArgSeparator
 highlight link titleStart ArgSeparator
 highlight link langStart ArgSeparator
+highlight link fileStart ArgSeparator
 
 highlight link notesFunction NoteFunction
 highlight link notesKeyword NoteKeyword
 highlight link startSource NoteKeyword
 highlight link startTable NoteKeyword
+highlight link startGroup NoteKeyword
 
 highlight link titleLine SectionTitle
 highlight link bullet NoteBullet
