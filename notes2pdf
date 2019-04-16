@@ -9,8 +9,32 @@ FNAME=$1
 # Output message if verbose set
 function verbout
 {
+	local icon
+	if [ ! -z $2 ]; then
+		icon="$2"
+	else
+		icon='*'
+	fi
+
 	if [ $verbose -eq 1 ]; then
-		echo -e "   \e[0;37m[\e[1;34m*\e[0;37m]\e[0m $1"
+		echo -en "   \e[0;37m["
+		case "$icon" in
+			"+")
+				echo -en "\e[1;36m"
+				;;
+			"?")
+				echo -en "\e[1;33m"
+				;;
+			">")
+				;&
+			"<")
+				echo -en "\e[1;32m"
+				;;
+			*)
+				echo -en "\e[1;34m"
+				;;
+		esac
+		echo -e "$icon\e[0;37m]\e[0m $1"
 	fi
 }
 
@@ -207,7 +231,7 @@ function parse_frc
 function parse_fnc
 {
 	local o c d
-	verbout "Generating replacements for $3)"
+	verbout "Generating replacements for $3)" ":"
 	if grep -q "$3" $1; then
 		echo -n '' > funcs/$2
 		while IFS= read -r l; do
@@ -292,7 +316,7 @@ function insert_src_output
 						echo -e "    Then run \e[0;37mfg\e[0m" 1>&2
 					
 						# background notes2pdf
-						(kill -SIGTSTP $$) &
+						(kill -SIGTSTP $$ > /dev/null) &
 					fi
 					# cleanup the typescript file and output (formatted)
 					col -bp < typescript | tr -d '\15\32' | sed '1d;$d' | awk '/^$/ {nlstack=nlstack "\n";next;} {printf "%s",nlstack; nlstack=""; print;}' | sed -e '$ ! s/$/\\\\/g'
@@ -419,7 +443,7 @@ if [ $# -gt 0 ]; then
 					_help=1
 					;;
 				*)
-					echo -e "\e[0;37m[\e[1;33m-\e[0;37m]\e[0m Unknown option '$1'. Ignoring"
+					echo -e "\e[0;37m[\e[1;33m?\e[0;37m]\e[0m Unknown option '$1'. Ignoring"
 					;;
 			esac
 			shift
@@ -472,7 +496,7 @@ if [ $execute -eq 1 ]; then
 		echo -e "\e[0;37m[\e[1;31m!\e[0;37m]\e[0m Source groups not defined. Ignoring execute switch"
 		execute=0
 	else
-		verbout "Execute switch set, collecting Source groups"
+		verbout "Execute switch set, collecting Source groups" "+"
 		mkdir -p src/
 		awk '/GRPS/{flag=1;}/GRPE/{print; flag=0;} flag' $FNAME > src/groups
 		group_src
@@ -482,7 +506,7 @@ fi
 # out.tmp is a temporary file that contains most of the formatted content
 
 # Initialize the LaTeX preamble, conditionally include based upon note contents
-verbout "Defining template defaults"
+verbout "Defining template defaults" "+"
 cat > out.tmp <<EOF
 \\documentclass[letterpaper,12pt]{article}
 \\usepackage[letterpaper,margin=0.75in]{geometry}
@@ -497,7 +521,7 @@ EOF
 
 if grep -q 'EQUS\|SRCS' $FNAME; then
 	verbout "Found Equation/Source block(s) in $FNAME"
-	verbout "Updating template"
+	verbout "Updating template" "+"
 cat >> out.tmp <<EOF
 \\usepackage{tcolorbox}
 
@@ -515,14 +539,14 @@ fi
 
 if grep -q 'equ(.*)\|EQUS' $FNAME; then
 	verbout "Found Equation(s) in $FNAME"
-	verbout "Updating template"
+	verbout "Updating template" "+"
 	echo "\\usepackage{mathtools}" >> out.tmp
 	echo "" >> out.tmp
 fi
 
 if grep -q 'SRCS' $FNAME; then
 	verbout "Found Source block(s) in $FNAME"
-	verbout "Updating template"
+	verbout "Updating template" "+"
 cat >> out.tmp <<EOF
 \\usepackage{listings}
 
@@ -579,17 +603,18 @@ while IFS=$mIFS read -r line; do
 	# These conditions are used to determine what block the current line is in
 	# And customize the line output as necessary
 	if [[ "$line" == "LSTS" ]]; then
-		verbout "Start List block"
+		verbout "Entering List block" ">" 
 		lstc=$((lstc+1))
 		line="_LST$lstc"
 	fi
 
 	if [[ "$line" == "GRPS"* ]]; then
-		verbout "Group start found"
+		verbout "Entering Group block" ">"
 		grpc=$((grpc+1))
 	fi
 
 	if [[ "$line" == "GRPE" ]]; then
+		verbout "Leaving Group block" "<"
 		line="_GRP$grpc"
 	fi
 
@@ -600,36 +625,36 @@ while IFS=$mIFS read -r line; do
 	fi
 
 	if [[ "$line" == "TBLS"* ]]; then
-		verbout "Start Table block"
+		verbout "Entering Table block" ">"
 		tstc=$((tstc+1))
 		line="_TBL$tstc"
 		tflag=2
 	fi
 
 	if [[ "$line" == "TBLE" ]]; then
-		verbout "End Table block"
+		verbout "Leaving Table block" "<"
 		tflag=3
 	fi
 
 	if [[ "$line" == "EQUS" ]]; then
-		verbout "Start Equation block"
+		verbout "Entering Equation block" ">"
 		eflag=1
 		equc=$((equc+1))
 		cnt=`get_line_count "$FNAME" "EQUS" "EQUE" $equc`
 	fi
 
 	if [[ "$line" == "EQUE" ]]; then
-		verbout "End Equation block"
+		verbout "Leaving Equation block" "<"
 		eflag=0
 	fi
 
 	if [[ "$line" == "SRCS:"* ]]; then
-		verbout "Start Source block"
+		verbout "Entering Source block" ">"
 		sflag=1
 	fi
 
 	if [[ "$line" == "SRCE" ]]; then
-		verbout "End Source block"
+		verbout "Leaving Source block" "<"
 		sflag=0
 	fi
 	
@@ -678,6 +703,7 @@ while IFS=$mIFS read -r line; do
 done < $FNAME # FNAME is the input file)
 
 # If function replacements defined with parse_fnc, replace them
+verbout "Inserting parsed functions"
 if [ "$(ls -A funcs)" ]; then
 	while read -r fnf; do
 		while IFS=":" read -r o r; do
@@ -715,6 +741,7 @@ if grep -q 'TBLS' $FNAME; then
 fi
 
 # Replace SRC* lines with proper LaTeX/listings beginning/end
+verbout "Formatting Source blocks"
 while read -r line; do
 	lang=`cut -d':' -f2 <<< $line`
 	sed -i "s~$line~\\\\begin{minimal}\n\\\\begin{lstlisting}[language=$lang]~" out.tmp
@@ -759,15 +786,16 @@ verbout "Compiling formatted content to $FNAME.tex"
 while IFS= read -r line; do
 
 	if [[ "$line" == "_LST"* ]]; then
-		verbout "List block found. Inserting formatted content"
+		verbout "List block found. Inserting formatted content" "+"
 		gn=$(echo $line | sed 's/_LST//')
 		sed -n '/LSTS/{:a;N;/LSTE/!ba;x;s/^/x/;/^x\{'"$gn"'\}$/{x;p;q};x}' lout | grep -v 'LST' >> $FNAME.tex
 	elif [[ "$line" == "_TBL"* ]]; then
-		verbout "Table block found. Inserting formatted content"
+		verbout "Table block found. Inserting formatted content" "+"
 		tn=$(echo $line | sed 's/_TBL//')
 		sed -n '/TBLS/{:a;N;/TBLE/!ba;x;s/^/x/;/^x\{'"$tn"'\}$/{x;p;q};x}' tout | grep -v 'TBL' >> $FNAME.tex
 	elif [[ "$line" == "_GRP"* ]]; then
 		if [ $execute -eq 1 ]; then
+			verbout "Attempting to insert Source Code execution" "+"
 			grn=$(echo $line | sed 's/_GRP//')
 			insert_src_output "src/$grn.src" $grn >> $FNAME.tex
 		fi
@@ -806,8 +834,10 @@ fi
 if [ $preview -eq 1 ]; then
 	if [ $error -eq 0 ]; then
 		echo -e "\e[0;37m[\e[1;32mi\e[0;37m]\e[0m Opening preview of $FNAME.pdf" 
-		# This is not tested
+		# This is tested
 		if [[ "$os" == "win" ]]; then
+			# Determine if Ubuntu, openSUSE, or SUSE Linux Enterprise Server 12
+			verbout "Determining WSL Linux Distro" "?"
 			ubuntu="CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc"
 			suse="46932SUSE.openSUSELeap42.2_022rs5jcyhyac"
 			entsuse="46932SUSE.SUSELinuxEnterpriseServer12SP2_022rs5jcyhyac"

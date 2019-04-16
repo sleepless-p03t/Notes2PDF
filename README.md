@@ -43,6 +43,33 @@ Changing to Windows User directory (example)
 cd $WHOME
 ```
 
+Adding easy access to Linux path (for Windows calls)
+
+1. In your ~/.bashrc file add:
+```bash
+# If you installed Ubuntu Subsystem:
+export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\\LocalState\\rootfs\\home\\$(whoami)\\"
+
+# If you installed openSUSE Leap 42 Subsystem:
+export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\46932SUSE.openSUSELeap42.2_022rs5jcyhyac\\LocalState\\rootfs\\home\\$(whoami)\\"
+
+# If you installed SUSE Linux Enterprise Server 12 Subsystem:
+export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\46932SUSE.SUSELinuxEnterpriseServer12SP2_022rs5jcyhyac\\LocalState\\rootfs\\home\\$(whoami)\\"
+```
+2. Once you've saved your `~/.bashrc` file, run:
+```bash
+source ~/.bashrc
+```
+
+Accessing Linux files with Windows applications via cmd.exe calls from the terminal:\*
+```bash
+# This is within the Linux terminal
+
+cmd.exe /C dir "$WSL_HOME"
+```
+
+\* *Note: This is used in notes2pdf to open generated PDFs*
+
 ### Installing texlive packages (Linux and Windows)
 
 In a terminal, do one of the following:
