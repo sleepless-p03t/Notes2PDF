@@ -295,6 +295,9 @@ function insert_src_output
 			if [ $debug -eq 1 ]; then
 				python3 -m py_compile src/$file 2> >(tee debug/${file%.*}.err >&2)
 				cp src/$file debug/
+				if [ ! -s debug/${file%.*}.err ]; then
+					rm -f debug/${file%.*}.err
+				fi
 			else
 				python3 -m py_compile src/$file 2> /dev/null
 			fi
