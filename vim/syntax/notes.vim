@@ -15,7 +15,8 @@ if &background ==# "dark"
 	highlight TextSpecial ctermfg=lightgreen guifg=lightgreen
 	highlight NoteBullet cterm=bold ctermfg=green gui=bold guifg=green
 	highlight SectionTitle cterm=bold ctermfg=cyan gui=bold guifg=cyan
-	highlight GenString ctermfg=lightgray guifg=lightgray
+	highlight GenWord ctermfg=lightgray guifg=lightgray
+	highlight NoteString ctermfg=green guifg=green
 elseif &background ==# "light"
 	highlight NoteFunction ctermfg=cyan guifg=cyan
 	highlight NoteKeyword ctermfg=green guifg=green
@@ -25,16 +26,17 @@ elseif &background ==# "light"
 	highlight TextSpecial ctermfg=lightblue guifg=lightblue
 	highlight NoteBullet cterm=bold ctermfg=cyan gui=bold guifg=cyan
 	highlight SectionTitle cterm=bold ctermfg=blue gui=bold guifg=blue
-	highlight GenString ctermfg=black guifg=black
+	highlight GenWord ctermfg=black guifg=black
+	highlight NoteString ctermfg=lightcyan guifg=lightcyan
 endif
 
 " Basic 'static' keywords/rules
-syntax keyword notesFunction cmb frc equ
+syntax keyword notesFunction cmb frc equ bld udl itl
 syntax keyword notesKeyword EQUS EQUE LSTS LSTE SRCE TBLE GRPE PBREAK nextgroup=EOL
 
 " Title and bullet styles
 syntax match titleLine /^#.*$/
-syntax match bullet /^[ \t]*\(\* \|\*\S\)[.]*/
+syntax match bullet /^[ \t]*\(\* \|\*\S\+\)[.]*/
 
 " Special notesKeywords
 syntax keyword startSource SRCS nextgroup=langStart
@@ -59,11 +61,13 @@ syntax keyword SourceLanguage asm awk bash sh csh ksh zsh c cpp cs css javascrip
 " End of line rule
 syntax match EOL '$' contained
 
+syntax region noteString start=/\v"/ skip=/\v\\./ end=/\v"/
+
 " Link syntax rules to color rules
 highlight link TableCols NumberArg
 highlight link TableTitle TextStandOut
 highlight link SourceLanguage TextSpecial
-highlight link FileName GenString
+highlight link FileName GenWord
 
 highlight link colStart ArgSeparator
 highlight link titleStart ArgSeparator
@@ -79,11 +83,13 @@ highlight link startGroup NoteKeyword
 highlight link titleLine SectionTitle
 highlight link bullet NoteBullet
 
+highlight link noteString NoteString
+
 " Highlight matching parens, error output mismatched paren
 " Modified based on Accepted Answer from https://stackoverflow.com/questions/542929/highlighting-unmatched-brackets-in-vim
 " which is a variation on Dr Chip's rainbow plugin: http://www.drchip.org/astronaut/vim/#RAINBOW
 
-syntax cluster ParenGroup contains=notesFunction
+syntax cluster ParenGroup contains=notesFunction,noteString
 syntax match ParenError display ')'
 syntax region  Paren transparent matchgroup=hlLevel0 start='(' end=')' contains=@ParenGroup,Paren1
 syntax region  Paren1 transparent matchgroup=hlLevel1 start='(' end=')' contains=@ParenGroup,Paren2

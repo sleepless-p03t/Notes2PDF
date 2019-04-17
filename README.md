@@ -229,8 +229,10 @@ It currently supports:
 - equation blocks
 - Fractions
 - a choose b notation
-- Rudimentary table formatting
+- Table formatting
 - Syntax highlighting for programming languages
+- Can insert program output
+- Bold, underline, and italics formatting
 
 ## The Notes Syntax
 
