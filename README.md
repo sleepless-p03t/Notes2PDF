@@ -25,13 +25,9 @@ PDF file. The markdown language is designed to be easy to type quickly
 > 
 > Adding easy access to Windows directories:
 > 
-> 1. If you don't know your Windows username, do the following in cmd:
-> ```cmd
-> echo %USERNAME%
-> ```
-> 2. In the Ubuntu terminal do this:
+> In the Ubuntu terminal do this:
 > ```bash
-> echo 'export WHOME="/mnt/c/Users/<your Windows username>/"' >> ~/.bashrc
+> echo 'export WHOME="/mnt/c/Users/'"$(cmd.exe /C echo %USERNAME%)"'/"' >> ~/.bashrc
 > source ~/.bashrc
 > ```
 > Copying a file to your Windows Desktop from Ubuntu terminal (example)
