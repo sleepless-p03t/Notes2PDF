@@ -17,24 +17,7 @@ function verbout
 	fi
 
 	if [ $verbose -eq 1 ]; then
-		echo -en "   \e[0;37m["
-		case "$icon" in
-			"+")
-				echo -en "\e[1;36m"
-				;;
-			"?")
-				echo -en "\e[1;33m"
-				;;
-			">")
-				;&
-			"<")
-				echo -en "\e[1;32m"
-				;;
-			*)
-				echo -en "\e[1;34m"
-				;;
-		esac
-		echo -e "$icon\e[0;37m]\e[0m $1"
+		echo -en "   \e[0;37m[\e[1;36m$icon\e[0;37m]\e[0m $1"
 	fi
 }
 
@@ -42,6 +25,30 @@ function verbout
 function report_err
 {
 	echo -e "\e[0;31mError on line \e[1;31m$1\e[0m"
+}
+
+function verify_groups
+{
+	local blocks=( "LSTS,LSTE" "SRCS,SRCE" "EQUS,EQUE" "GRPS,GRPE" "TBLS,TBLE" )
+	local bs be cs ce
+	local err=0
+	unset IFS
+	for i in ${blocks[@]}; do
+		bs=`cut -d',' -f1 <<< $i`
+		be=`cut -d',' -f2 <<< $i`
+		cs=`grep -o "$bs" $FNAME | wc -l`
+		ce=`grep -o "$be" $FNAME | wc -l`
+
+		if [ $cs -ne $ce ]; then
+			echo -e "\e[0;37m[\e[1;31m!\e[0;37m]\e[0m Mismtached ${bs:0:3} block(s)"
+			err=1
+		fi
+	done
+
+	if [ $err -eq 1 ]; then
+		echo "Mismatched block(s) found. Aborting"
+		exit 1
+	fi
 }
 
 # This function parses and formats bullet lists
@@ -389,6 +396,7 @@ fi
 
 if [[ "$os" == "osx" ]]; then
 	alias sed="gsed"
+	alias grep="ggrep"
 fi
 
 rm -f typescript
@@ -472,6 +480,8 @@ if [ ! -f ${1%.*}.notes ]; then
 else
 	FNAME="$1"
 fi
+
+verify_groups
 
 # Output message based on debug switch
 if [ $debug -eq 1 ]; then

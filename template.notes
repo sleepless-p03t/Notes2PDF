@@ -5,7 +5,6 @@ LSTS
 	*a. internal
 * Equation groups
 * And code
-LSTE
 
 Equations within sentences work: equ(x = (x + 1)^2) just like that
 

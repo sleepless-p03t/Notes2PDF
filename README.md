@@ -6,69 +6,69 @@ PDF file. The markdown language is designed to be easy to type quickly
 
 ## Prerequisites
 
-### Windows Users Only
-1. Open PowerShell (as admin)
-2. Run:
-```powershell
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
-```
-and restart your computer when prompted\
-3. Search Ubuntu in the Windows Store\
-4. Install Ubuntu\
-5. After Ubuntu is installed, open the application\
-6. Follow the prompts for Username and Password setup\
-7. Run the following after Ubuntu finishes installing:
-```bash
-sudo apt-get update
-sudo apt-get upgrade
-```
-
-Adding easy access to Windows directories:
-
-1. If you don't know your Windows username, do the following in cmd:
-```cmd
-echo %USERNAME%
-```
-2. In the Ubuntu terminal do this:
-```bash
-echo 'export WHOME="/mnt/c/Users/<your Windows username>/"' >> ~/.bashrc
-source ~/.bashrc
-```
-Copying a file to your Windows Desktop from Ubuntu terminal (example)
-```bash
-cp myfile $WHOME/Desktop/
-```
-Changing to Windows User directory (example)
-```bash
-cd $WHOME
-```
-
-Adding easy access to Linux path (for Windows calls)
-
-1. In your ~/.bashrc file add:
-```bash
-# If you installed Ubuntu Subsystem:
-export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\\LocalState\\rootfs\\home\\$(whoami)\\"
-
-# If you installed openSUSE Leap 42 Subsystem:
-export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\46932SUSE.openSUSELeap42.2_022rs5jcyhyac\\LocalState\\rootfs\\home\\$(whoami)\\"
-
-# If you installed SUSE Linux Enterprise Server 12 Subsystem:
-export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\46932SUSE.SUSELinuxEnterpriseServer12SP2_022rs5jcyhyac\\LocalState\\rootfs\\home\\$(whoami)\\"
-```
-2. Once you've saved your `~/.bashrc` file, run:
-```bash
-source ~/.bashrc
-```
-
-Accessing Linux files with Windows applications via cmd.exe calls from the terminal:\*
-```bash
-# This is within the Linux terminal
-
-cmd.exe /C dir "$WSL_HOME"
-```
-
-\* *Note: This is used in notes2pdf to open generated PDFs*
+> ### Windows Users Only
+> 1. Open PowerShell (as admin)
+> 2. Run:
+> ```powershell
+> Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+> ```
+> and restart your computer when prompted\
+> 3. Search Ubuntu in the Windows Store\
+> 4. Install Ubuntu\
+> 5. After Ubuntu is installed, open the application\
+> 6. Follow the prompts for Username and Password setup\
+> 7. Run the following after Ubuntu finishes installing:
+> ```bash
+> sudo apt-get update
+> sudo apt-get upgrade
+> ```
+> 
+> Adding easy access to Windows directories:
+> 
+> 1. If you don't know your Windows username, do the following in cmd:
+> ```cmd
+> echo %USERNAME%
+> ```
+> 2. In the Ubuntu terminal do this:
+> ```bash
+> echo 'export WHOME="/mnt/c/Users/<your Windows username>/"' >> ~/.bashrc
+> source ~/.bashrc
+> ```
+> Copying a file to your Windows Desktop from Ubuntu terminal (example)
+> ```bash
+> cp myfile $WHOME/Desktop/
+> ```
+> Changing to Windows User directory (example)
+> ```bash
+> cd $WHOME
+> ```
+>
+> Adding easy access to Linux path (for Windows calls)
+>
+> 1. In your ~/.bashrc file add:
+> ```bash
+> # If you installed Ubuntu Subsystem:
+> export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\\LocalState\\rootfs\\home\\$(whoami)\\"
+>
+> # If you installed openSUSE Leap 42 Subsystem:
+> export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\46932SUSE.openSUSELeap42.2_022rs5jcyhyac\\LocalState\\rootfs\\home\\$(whoami)\\"
+> 
+> # If you installed SUSE Linux Enterprise Server 12 Subsystem:
+> export WSL_HOME="%userprofile%\\AppData\\Local\\Packages\\46932SUSE.SUSELinuxEnterpriseServer12SP2_022rs5jcyhyac\\LocalState\\rootfs\\home\\$(whoami)\\"
+> ```
+> 2. Once you've saved your `~/.bashrc` file, run:
+> ```bash
+> source ~/.bashrc
+> ```
+>
+> Accessing Linux files with Windows applications via cmd.exe calls from the terminal:\*
+> ```bash
+> # This is within the Linux terminal
+>
+> cmd.exe /C dir "$WSL_HOME"
+> ```
+> 
+> \* *Note: This is used in notes2pdf to open generated PDFs*
 
 ### Installing texlive packages (Linux and Windows)
 
@@ -136,7 +136,7 @@ fi
 
 If you want to add syntax rules and keyword completion for notes files to vim:\
 *Note: `~/.vim` and `~/.vimrc` are Linux/OSX only*\
-Windows users: Check [here](https://superuser.com/questions/86246/where-should-the-vimrc-file-be-located-on-windows-7) for vim/vimrc locations
+Users with Vim installed in Windows: Check [here](https://superuser.com/questions/86246/where-should-the-vimrc-file-be-located-on-windows-7) for vim/vimrc locations
 
 ```bash
 mkdir -p ~/.vim/ftdetect/
@@ -308,3 +308,4 @@ notes2pdf -e template.notes
 ```
 
 If you have any questions or issues, you can email me at sleepless.genesis6@gmail.com
+
