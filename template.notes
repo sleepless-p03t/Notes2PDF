@@ -5,6 +5,7 @@ LSTS
 	*a. internal
 * Equation groups
 * And code
+LSTE
 
 Equations within sentences work: equ(x = (x + 1)^2) just like that
 
@@ -35,6 +36,7 @@ SRCS:python
 print(name)
 print(age)
 SRCE
+PBREAK
 GRPE
 Some sample Java
 

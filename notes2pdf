@@ -17,7 +17,7 @@ function verbout
 	fi
 
 	if [ $verbose -eq 1 ]; then
-		echo -en "   \e[0;37m[\e[1;36m$icon\e[0;37m]\e[0m $1"
+		echo -e "   \e[0;37m[\e[1;36m$icon\e[0;37m]\e[0m $1"
 	fi
 }
 
@@ -313,7 +313,6 @@ function insert_src_output
 			if [ $? -ne 0 ]; then
 				echo -e "\e[0;37m[\e[1;31m!\e[0;37m]\e[0m Error(s) encountered in src/$file (group #$group)" 1>&2
 			else
-				echo "\\pagebreak"
 				echo "\\begin{center}"
 				echo "\\textsc{\\large Output of code segment(s)}\\\\"
 				echo "\\end{center}"
@@ -609,7 +608,6 @@ gflag=0
 # The default IFS
 mIFS=
 
-# TODO Add PAGEBREAK handling immediately after GRPE
 # reads each line in the file
 while IFS=$mIFS read -r line; do
 	
