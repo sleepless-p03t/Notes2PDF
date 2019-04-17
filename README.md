@@ -27,7 +27,7 @@ PDF file. The markdown language is designed to be easy to type quickly
 > 
 > In the Ubuntu terminal do this:
 > ```bash
-> echo 'export WHOME="/mnt/c/Users/'"$(cmd.exe /C echo %USERNAME%)"'/"' >> ~/.bashrc
+> echo 'export WHOME="/mnt/c/Users/'"$(cmd.exe /C echo %USERNAME%)"'"' >> ~/.bashrc
 > source ~/.bashrc
 > ```
 > Copying a file to your Windows Desktop from Ubuntu terminal (example)
