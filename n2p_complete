@@ -2,7 +2,7 @@
 
 _notes2pdfcomplete() {
 	
-	local cur prev count
+	local cur prev
 
 	COMPREPLY=()
 

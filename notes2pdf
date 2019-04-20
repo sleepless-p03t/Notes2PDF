@@ -7,7 +7,7 @@ oIFS=$IFS
 FNAME=$1
 
 # Output message if verbose set
-function verbout
+verbout()
 {
 	local icon
 	if [ ! -z $2 ]; then
@@ -22,12 +22,12 @@ function verbout
 }
 
 # Output line number where error occurs in script
-function report_err
+report_err()
 {
 	echo -e "\e[0;31mError on line \e[1;31m$1\e[0m"
 }
 
-function verify_groups
+verify_groups()
 {
 	local blocks=( "LSTS,LSTE" "SRCS,SRCE" "EQUS,EQUE" "GRPS,GRPE" "TBLS,TBLE" )
 	local bs be cs ce
@@ -58,7 +58,7 @@ function verify_groups
 # and any text immediately following a * is treated
 # as the bullet "icon" 
 #	Ex: '*a.' in the note file becomes 'a.' in the PDF
-function list
+list()
 {
 	local file="$1"
 	local pi=-1
@@ -129,7 +129,7 @@ function list
 # This function formats TBL blocks
 # TBLS:cols:title is parsed and formatted first
 # The first column is formatted as a column title row
-function table
+table()
 {
 	local file="$1"
 	local title cols
@@ -166,7 +166,7 @@ function table
 }
 
 # This function is used with equation block parsing
-function get_line_count
+get_line_count()
 {
 	local file start end num cnt
 	file="$1"
@@ -182,7 +182,7 @@ function get_line_count
 }
 
 # Isolate frc() from within a line; retains +, *, / from being interpretted by sed
-function isolate_frc
+isolate_frc()
 {
 	local l="$1"
 	local o c d
@@ -215,7 +215,7 @@ function isolate_frc
 }
 
 # Parses through frc() and formats all frc() into proper LaTeX
-function parse_frc
+parse_frc()
 {
 	local l="$1"
 
@@ -237,7 +237,7 @@ function parse_frc
 	# The format string follows this structure:
 	# Original text:Replacement
 # The fifth argument (optional) defines the field separator
-function parse_fnc
+parse_fnc()
 {
 	local o c d
 	verbout "Generating replacements for $3)" ":"
@@ -265,7 +265,7 @@ function parse_fnc
 }
 
 # Need to fix where lang and filename or inserted
-function group_src
+group_src()
 {
 	local cIFS ngrps lcnt file lang repeat
 	cIFS=$IFS
@@ -291,7 +291,7 @@ function group_src
 }
 
 # Execute based on language
-function insert_src_output
+insert_src_output()
 {
 	local enc
 	local sfile="$1"
@@ -345,7 +345,7 @@ function insert_src_output
 }
 
 # Show formatted help message
-function showhelp
+showhelp()
 {
 	echo "Usage: notes2pdf <switch(es)> <file>"
 	echo -e "\n \e[4mPossible switches:\e[0m\n"
@@ -362,7 +362,7 @@ function showhelp
 
 # Cleanup on exit
 # Reset IFS, remove temporary files/directories
-function at_exit
+at_exit()
 {
 	IFS=$oIFS
 	rm -rf funcs
@@ -794,7 +794,7 @@ sed -i '/[ \t]*\*/d' out.tmp
 
 verbout "Formatting wrapper function(s)"
 # Replace wrapper functions with their LaTeX equivalent
-sed -i 's/equ(\([^)]*\))/\\( \1 \\)/g' out.tmp
+sed -i 's/equ(\([^]]*\))/\\( \1 \\)/g' out.tmp
 
 sed -i 's/uln(\([^)]*\))/\\underline{\1}/g' out.tmp
 sed -i 's/bld(\([^)]*\))/\\textbf{\1}/g' out.tmp
